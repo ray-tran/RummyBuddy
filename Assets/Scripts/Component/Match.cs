@@ -5,7 +5,7 @@ using UnityEngine;
 public class Match : MonoBehaviour
 {
     // A match has multiple rounds
-    public static Match instace;
+    public static Match instance;
     public int PlayerScore { get; set; }
     public int AIScore { get; set; }
     public int RoundCount { get; set; }
@@ -16,11 +16,11 @@ public class Match : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        instace = this;
+        instance = this;
     }
 
     public void StartRound()
-    {
+    { 
         RoundCount++;
         //Clean table, shuffle, deal
         Dealer.instace.ShuffleCoroutine();

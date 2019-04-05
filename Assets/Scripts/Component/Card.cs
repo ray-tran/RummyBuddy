@@ -3,14 +3,14 @@ using System.Collections;
 
 public class Card : MonoBehaviour
 {
-
-
     public CardSlot ParentCardSlot { get; set; }
 
     public int FaceValue { get; set; } //Face cards: 10; Ace: 11
-    public Suit Suit { get; set; } //Enum SUIT defined in CardDeck.cs
+    public Suit CardSuit { get; set; } //Enum SUIT defined in CardDeck.cs
     public int Rank { get; set; } //Ace:1; Jack:11; Queen:12; King:13
 
+    private float _positionDamp = .2f;
+    private float _rotationDamp = .2f;
 
     //dir path to texture file (.png): AssetBundles/Cards
     public string TexturePath { get; set; }
@@ -24,8 +24,7 @@ public class Card : MonoBehaviour
         {
             if (_targetTransform == null)
             {
-                GameObject gameObject = new GameObject(this.name + "Target");
-                _targetTransform = gameObject.GetComponent<Transform>();
+                _targetTransform = new GameObject(this.name + "Target").GetComponent<Transform>();
                 _targetTransform.position = transform.position;
                 _targetTransform.forward = transform.forward;
             }
@@ -33,21 +32,6 @@ public class Card : MonoBehaviour
         }
     }
     private Transform _targetTransform;
-
-
-    private float _positionDamp = .2f;
-
-    private float _rotationDamp = .2f;
-
-    private GameObject dealerGO;
-    private Dealer dealer;
-
-    private void Awake()
-    {
-        dealerGO = GameObject.Find("Dealer");
-        dealer = dealerGO.GetComponent<Dealer>();
-        //Round.instance.CurrentTurn = Turn.PlayerDraw;
-    }
 
     private void Update()
     {
@@ -82,10 +66,6 @@ public class Card : MonoBehaviour
         }
     }
 
-
-
-
-
     public void SetDamp(float newPositionDamp, float newRotationDamp)
     {
         _positionDamp = newPositionDamp;
@@ -99,6 +79,7 @@ public class Card : MonoBehaviour
             SmoothToPointAndDirection(TargetTransform.position, _positionDamp, TargetTransform.rotation, _rotationDamp);
         }
     }
+
 
     private void SmoothToPointAndDirection(Vector3 point, float moveSmooth, Quaternion rotation, float rotSmooth)
     {
@@ -138,6 +119,5 @@ public class Card : MonoBehaviour
         Resources.UnloadAsset(GetComponent<Renderer>().material.mainTexture);
         GetComponent<Renderer>().material.mainTexture = null;
     }
-
 }
 

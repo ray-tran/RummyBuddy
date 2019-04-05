@@ -41,6 +41,7 @@ public class Round : MonoBehaviour
     {
         //reset round data
         UpdateTurn(Turn.PlayerDraw);
+        
     }
 
     public void UpdateTurn(Turn newTurn)
