@@ -27,7 +27,7 @@ public class Dealer : MonoBehaviour
 	{
         instace = this;
 		_cardDeck.InstanatiateDeck("cards");
-		StartCoroutine(StackCardRangeOnSlot(0, _cardDeck.CardList.Count, _centerStackCardSlot));
+		StartCoroutine(CardDropShuffleDeal(0, _cardDeck.CardList.Count, _centerStackCardSlot));
 	}
 
     //Move all cards in a slot to another slot
@@ -41,7 +41,8 @@ public class Dealer : MonoBehaviour
 	}
 	
     //Beginning animation where everycard falls from the sky to the center stack
-	private IEnumerator StackCardRangeOnSlot(int start, int end, CardSlot cardSlot) 
+    //Drops, Shuffles and Deals the cards.
+	private IEnumerator CardDropShuffleDeal(int start, int end, CardSlot cardSlot) 
 	{
 		DealInProgress++;
 		for (int i = start; i < end; ++i)
@@ -49,7 +50,9 @@ public class Dealer : MonoBehaviour
 			cardSlot.AddCard(_cardDeck.CardList[i]);
 			yield return new WaitForSeconds(CardStackDelay);
 		}
-		DealInProgress--;
+        DealInProgress--;
+        ShuffleCoroutine();
+        StartCoroutine(ShuffleCoroutine());        
 	}
 
     /// Shuffle Coroutine.
