@@ -18,9 +18,9 @@ public class GameUI : MonoBehaviour
 
 	public void Shuffle()
 	{
-		if (Dealer.instace.DealInProgress == 0)
+		if (Dealer.instance.DealInProgress == 0)
 		{
-            StartCoroutine(Dealer.instace.ShuffleCoroutine());
+            StartCoroutine(Dealer.instance.ShuffleCoroutine());
         }
 	}
 	

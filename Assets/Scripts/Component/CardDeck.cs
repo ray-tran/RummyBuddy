@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 
-public enum Suit { Spades, Hearts, Clubs, Diamonds };
+public enum Suit { Spades, Clubs, Diamonds, Hearts };
 
 public class CardDeck : MonoBehaviour 
 {
@@ -66,22 +66,12 @@ public class CardDeck : MonoBehaviour
         {
             card.CardSuit = Suit.Spades;
         }
-
-        for (int i = 2; i < 11; ++i)
-		{
-			if (name.Contains(i.ToString()))
-			{
-                card.FaceValue = i;
-                card.Rank = i;
-                return;
-			}
-		}
         if (name.Contains("jack"))
         {
             card.FaceValue = 10;
             card.Rank = 11;
         }
-        else if (name.Contains("queen")) 
+        else if (name.Contains("queen"))
         {
             card.FaceValue = 10;
             card.Rank = 12;
@@ -91,10 +81,22 @@ public class CardDeck : MonoBehaviour
             card.FaceValue = 10;
             card.Rank = 13;
         }
-		else if (name.Contains("ace"))
-		{
-			card.FaceValue = 11;
+        else if (name.Contains("ace"))
+        {
+            card.FaceValue = 11;
             card.Rank = 1;
+        }
+        else
+        {
+            for (int i = 2; i < 11; ++i)
+            {
+                if (name.Contains(i.ToString()))
+                {
+                    card.FaceValue = i;
+                    card.Rank = i;
+                    return;
+                }
+            }
         }
 	}	
 }

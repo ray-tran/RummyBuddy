@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Dealer : MonoBehaviour 
 {
-    public static Dealer instace;
+    public static Dealer instance;
 
     public CardDeck _cardDeck;
     public CardSlot _pickupCardSlot;
@@ -18,20 +18,18 @@ public class Dealer : MonoBehaviour
 
     public const float CardStackDelay = .01f;
 	
-	/// <summary>
 	/// Counter which keeps track current dealing movements in progress.
-	/// </summary>
 	public int DealInProgress { get; set; }
 
 	private void Awake()
 	{
-        instace = this;
+        instance = this;
 		_cardDeck.InstanatiateDeck("cards");
 		StartCoroutine(CardDropShuffleDeal(0, _cardDeck.CardList.Count, _centerStackCardSlot));
 	}
-
+    
     //Move all cards in a slot to another slot
-	private void MoveCardSlotToCardSlot(CardSlot sourceCardSlot, CardSlot targetCardSlot) 
+    private void MoveCardSlotToCardSlot(CardSlot sourceCardSlot, CardSlot targetCardSlot) 
 	{
 		Card card;
 		while ((card = sourceCardSlot.TopCard()) != null)
@@ -51,7 +49,6 @@ public class Dealer : MonoBehaviour
 			yield return new WaitForSeconds(CardStackDelay);
 		}
         DealInProgress--;
-        ShuffleCoroutine();
         StartCoroutine(ShuffleCoroutine());        
 	}
 
@@ -120,6 +117,11 @@ public class Dealer : MonoBehaviour
 
         MoveCardSlotToCardSlot(_centerStackCardSlot, _drawStackCardSlot);
         yield return new WaitForSeconds(.3f);
+
+        if (Match.instance.RoundCount == 0)
+        {
+            Match.instance.InitializeMatch();
+        }
 
         DealInProgress--;
     }

@@ -11,20 +11,36 @@ public class Match : MonoBehaviour
     public int RoundCount { get; set; }
     public int PlayerWinCount { get; set; }
     public int PlayerLossCount { get; set; }
-    public List<List<string>> RoundResult; //e.g. [["player", "23"], ["ai","49"],...]
+    public List<List<string>> RoundResult; //e.g. [["player", "23"], ["ai","49"],...] 
+                                           //means player wins first round with 23 points
 
     // Start is called before the first frame update
     void Awake()
     {
+        RoundCount = 0;
         instance = this;
     }
 
+    //Reset match data
+    public void InitializeMatch()
+    {
+        PlayerScore = 0;
+        AIScore = 0;
+        RoundCount = 0;
+        PlayerWinCount = 0;
+        PlayerLossCount = 0;
+        RoundResult = new List<List<string>>();
+        StartRound();
+    }
+
+
     public void StartRound()
     { 
+        if (RoundCount != 0)
+        {
+            Dealer.instance.ShuffleCoroutine(); //Clean table, shuffle, deal
+        }
         RoundCount++;
-        //Clean table, shuffle, deal
-        Dealer.instace.ShuffleCoroutine();
-        //Reset round data
         Round.instance.InitializeRound();
     }
 
@@ -32,7 +48,17 @@ public class Match : MonoBehaviour
     {
         //update
         //if either +100 points, call EndMatch
+        //else call DisplayRoundResult
     }
+
+    public void DisplayRoundResult()
+    {
+        //Flip cards around, requires new layout of card slots. Maybe done later as it's not super important now
+        //Display round score
+        //Display updated match score
+        //Display continue button. If continue button is clicked then call StartRound()
+    }
+
 
     public void EndMatch()
     {

@@ -5,7 +5,7 @@ public class Card : MonoBehaviour
 {
     public CardSlot ParentCardSlot { get; set; }
 
-    public int FaceValue { get; set; } //Face cards: 10; Ace: 11
+    public int FaceValue { get; set; } //Face cards:10; Ace:11
     public Suit CardSuit { get; set; } //Enum SUIT defined in CardDeck.cs
     public int Rank { get; set; } //Ace:1; Jack:11; Queen:12; King:13
 

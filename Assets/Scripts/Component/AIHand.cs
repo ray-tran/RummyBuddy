@@ -8,7 +8,6 @@ public class AIHand : PlayerHand
     private Dictionary<Card, CardSlot> KnownCards = new Dictionary<Card, CardSlot>();
     private HashSet<Card> DesiredCards = new HashSet<Card>();
 
-
     public new void Awake()
     {
         instance = this;
