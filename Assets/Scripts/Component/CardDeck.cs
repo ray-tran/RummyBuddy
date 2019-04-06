@@ -7,8 +7,7 @@ public enum Suit { Spades, Hearts, Clubs, Diamonds };
 
 public class CardDeck : MonoBehaviour 
 {
-	[SerializeField] //to make private vars visible in inspector
-	private GameObject _cardPrefab;	
+	public GameObject _cardPrefab;	
 	
 	public readonly List<Card> CardList =  new List<Card>();
 
@@ -53,19 +52,19 @@ public class CardDeck : MonoBehaviour
 
         if (name.Contains("clubs"))
         {
-            card.Suit = Suit.Clubs;
+            card.CardSuit = Suit.Clubs;
         }
         else if (name.Contains("diamonds"))
         {
-            card.Suit = Suit.Diamonds;
+            card.CardSuit = Suit.Diamonds;
         }
         else if (name.Contains("hearts"))
         {
-            card.Suit = Suit.Hearts;
+            card.CardSuit = Suit.Hearts;
         }
         else if (name.Contains("spades"))
         {
-            card.Suit = Suit.Spades;
+            card.CardSuit = Suit.Spades;
         }
 
         for (int i = 2; i < 11; ++i)

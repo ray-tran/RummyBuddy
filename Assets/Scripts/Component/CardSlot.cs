@@ -7,16 +7,13 @@ public class CardSlot : MonoBehaviour
 	public List<Card> CardList = new List<Card>();
 
     //card under table?
-    [SerializeField]
-	private bool _inverseStack;
+	public bool _inverseStack;
 
 	[Range(0.05f, 0.3f)]
-	[SerializeField]
-	private float _positionDamp = .2f;
+	public float _positionDamp = .2f;
 
 	[Range(0.05f, 0.3f)]
-	[SerializeField] 
-	private float _rotationDamp = .2f;   
+	public float _rotationDamp = .2f;   
 	
 	private void Awake()
 	{
@@ -67,14 +64,6 @@ public class CardSlot : MonoBehaviour
 			}
 			card.ParentCardSlot = this;
 			CardList.Add(card);
-            //if (name.IndexOf("DrawStackSlot", System.StringComparison.CurrentCulture) != -1)
-            //{
-            //    print("cardSlot rotation: " + transform.rotation.ToString() + "\n");
-            //    print("card rotation: " + card.transform.rotation.ToString() + "\n");
-            //    print("cardSlot eulerAngles: " + transform.eulerAngles.ToString() + "\n");
-            //    print("card eulerAngles: " + card.transform.eulerAngles.ToString() + "\n");
-
-            //}
             card.TargetTransform.rotation = transform.rotation;
 			card.TargetTransform.Rotate(card.TargetTransform.forward, Random.Range(-.4f, .4f), Space.Self);
 			float cardHeight = card.GetComponent<BoxCollider>().size.z;

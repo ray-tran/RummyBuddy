@@ -16,7 +16,7 @@ Player Hand:
 + Gin
 + Knock
 
- */
+*/
 
 public class PlayerHand : MonoBehaviour
 {
@@ -129,6 +129,4 @@ public class PlayerHand : MonoBehaviour
         //check eligibility
         //then call update round score
     }
-
-
 }

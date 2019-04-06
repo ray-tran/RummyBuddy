@@ -6,32 +6,17 @@ using UnityEngine.UI;
 public class Dealer : MonoBehaviour 
 {
     public static Dealer instace;
-    
-	[SerializeField]
-	private CardDeck _cardDeck;
 
-    [SerializeField]
-	private CardSlot _pickupCardSlot;		
-
-	[SerializeField]
-	private CardSlot _centerStackCardSlot;	
-
-	[SerializeField]
+    public CardDeck _cardDeck;
+    public CardSlot _pickupCardSlot;
+    public CardSlot _centerStackCardSlot;	
 	public CardSlot _discardStackCardSlot;
-
-    [SerializeField]
     public CardSlot _drawStackCardSlot;
+    public CardSlot _rightHandCardSlot;
+    public CardSlot _leftHandCardSlot;
+    public CardSlot _currentCardSlot;
 
-	[SerializeField]
-	private CardSlot _rightHandCardSlot;
-
-	[SerializeField]
-	private CardSlot _leftHandCardSlot;
-
-	[SerializeField]
-	private CardSlot _currentCardSlot;	
-
-	private const float CardStackDelay = .01f;
+    public const float CardStackDelay = .01f;
 	
 	/// <summary>
 	/// Counter which keeps track current dealing movements in progress.
@@ -70,11 +55,9 @@ public class Dealer : MonoBehaviour
         StartCoroutine(ShuffleCoroutine());        
 	}
 
-    /// <summary>
     /// Shuffle Coroutine.
     /// Moves all card to pickupCardSlot. Then shuffles them back
     /// to cardStackSlot.
-    /// </summary>
     public IEnumerator ShuffleCoroutine()
 	{
         DealInProgress++;
@@ -82,10 +65,12 @@ public class Dealer : MonoBehaviour
         {
             MoveCardSlotToCardSlot(slot, _centerStackCardSlot);
         }
+
         foreach (CardSlot slot in PlayerHand.instance.CardSlotList)
         {
             MoveCardSlotToCardSlot(slot, _centerStackCardSlot);
         }
+
         MoveCardSlotToCardSlot(_discardStackCardSlot, _centerStackCardSlot);
         MoveCardSlotToCardSlot(_drawStackCardSlot, _centerStackCardSlot);
         MoveCardSlotToCardSlot(_currentCardSlot, _centerStackCardSlot);
@@ -136,53 +121,6 @@ public class Dealer : MonoBehaviour
         MoveCardSlotToCardSlot(_centerStackCardSlot, _drawStackCardSlot);
         yield return new WaitForSeconds(.3f);
 
-        //UpdateCurrentTurn(Turn.PlayerDraw);
-
         DealInProgress--;
     }
-
-    //public IEnumerator DrawCoroutine()
-    //{
-    //DealInProgress++;
-
-    //if (_discardHoverStackCardSlot.AddCard(_prior4CardSlot.TopCard()))
-    //{	
-    //	yield return new WaitForSeconds(CardStackDelay);	
-    //}	
-    //if (_discardStackCardSlot.AddCard(_discardHoverStackCardSlot.TopCard()))
-    //{
-    //	yield return new WaitForSeconds(CardStackDelay);
-    //}
-    //if (_prior4CardSlot.AddCard(_prior3CardSlot.TopCard()))
-    //{
-    //	yield return new WaitForSeconds(CardStackDelay);
-    //}
-    //if (_prior3CardSlot.AddCard(_prior2CardSlot.TopCard()))
-    //{
-    //	yield return new WaitForSeconds(CardStackDelay);
-    //}
-    //if (_prior2CardSlot.AddCard(_prior1CardSlot.TopCard()))
-    //{
-    //	yield return new WaitForSeconds(CardStackDelay);
-    //}
-    //if (_prior1CardSlot.AddCard(_prior0CardSlot.TopCard()))
-    //{
-    //	yield return new WaitForSeconds(CardStackDelay);	
-    //}
-    //if (_prior0CardSlot.AddCard(_currentCardSlot.TopCard()))
-    //{
-    //yield return new WaitForSeconds(CardStackDelay);		
-    //}		
-    //_currentCardSlot.AddCard(_centerStackCardSlot.TopCard());	
-
-    //int collectiveFaceValue = _prior0CardSlot.FaceValue();
-    //collectiveFaceValue += _prior1CardSlot.FaceValue();
-    //collectiveFaceValue += _prior2CardSlot.FaceValue();
-    //collectiveFaceValue += _prior3CardSlot.FaceValue();
-    //collectiveFaceValue += _prior4CardSlot.FaceValue();
-    //collectiveFaceValue += _currentCardSlot.FaceValue();	
-    //GameUIInstance.FaceValueText.text = collectiveFaceValue.ToString();
-
-    //DealInProgress--;
-    //}	
 }
