@@ -77,6 +77,7 @@ public class PlayerHand : MonoBehaviour
     {
         AllMelds = new List<List<Card>>();
         OptimalMelds = new List<List<Card>>();
+        Deadwoods = new List<Card>();
         SortCardList(CardsInHand);
 
         ScanForSets();
@@ -84,11 +85,12 @@ public class PlayerHand : MonoBehaviour
         ScanForRuns(ClubsList);
         ScanForRuns(DiamondsList);
         ScanForRuns(HeartsList);
-        Log2DList(AllMelds); //Log to console
 
-        DecideOptimalMelds(); //TODO
+        DecideOptimalMelds();
 
-        SortHandUI(); //TODO
+        CalculateDeadwoods();
+
+        SortHandUI();
     }
 
     //Function that scan the hand and put any possible sets
@@ -188,20 +190,174 @@ public class PlayerHand : MonoBehaviour
         }
     }
 
-    //TODO
     //Function to use the melds in AllMelds and decide the optimal subset of AllMelds:
     //meaning no overlap in cards (each card appear only once) 
     //and have the highest total face value (consequentially lowest total deadwood value)
     private void DecideOptimalMelds()
     {
+        Dictionary<Card, int> dict = new Dictionary<Card, int>();
+        foreach (List<Card> meld in AllMelds)
+        {
+            foreach (Card c in meld)
+            {
+                if (!dict.ContainsKey(c))
+                {
+                    dict.Add(c, 1);
+                }
+                else
+                {
+                    dict[c] += 1;
+                }
+            }
+
+        }
+
+        int i = 0;
+        while (i < AllMelds.Count)
+        {
+            bool noOverlap = true;
+            foreach(Card c in AllMelds[i])
+            {
+                if (dict[c] > 1)
+                {
+                    noOverlap = false;
+                    break;
+                }
+            }
+
+            if (noOverlap)
+            {
+                OptimalMelds.Add(AllMelds[i]);
+                AllMelds.RemoveAt(i);
+            }
+            else
+            {
+                i++;
+            }
+        }
+
+        //At this point, AllMelds only contains melds with overlap
+
+        //Debug.Log("Overlapped Melds");
+        //Log2DList(AllMelds);
+
+        //Debug.Log("Unique Melds");
+        //Log2DList(OptimalMelds);
+
+        GetMaxSetOfPowerSet();
+    }
+
+    //Return the set of melds that have the highest value
+    private void GetMaxSetOfPowerSet()
+    {
+        List<List<List<Card>>> powerset = new List<List<List<Card>>>();
+        MaxSetOfPowerSetHelper(0, powerset);
+        //Debug.Log("Powerset");
+        //Log3DList(powerset);
+
+        int maxVal = 0;
+        List<List<Card>> curOptimalSet = new List<List<Card>>();
+        foreach (List<List<Card>> setOfMelds in powerset)
+        {
+            int curSetVal = GetSetOfMeldsFaceValue(setOfMelds);
+            if (curSetVal > maxVal)
+            {
+                maxVal = curSetVal;
+                curOptimalSet = setOfMelds;
+            }
+        }
+
+        OptimalMelds.AddRange(curOptimalSet);
+
+        OptimalMelds.Sort((a, b) =>
+        {
+            int firstCompare = a[0].Rank.CompareTo(b[0].Rank);
+            return firstCompare != 0 ? firstCompare : a[0].CardSuit.CompareTo(b[0].CardSuit);
+        });
 
     }
 
-    //TODO
+    private void MaxSetOfPowerSetHelper(int index, List<List<List<Card>>> powerset)
+    {
+        //Base case
+        //Add empty
+        if (index == AllMelds.Count)
+        {
+            List<List<Card>> empty = new List<List<Card>>();
+            powerset.Add(empty);
+            return;
+        }
+
+        //Build
+        MaxSetOfPowerSetHelper(index + 1, powerset);
+        List<Card> currentMeld = AllMelds[index];
+        List<List<List<Card>>> moreSets = new List<List<List<Card>>>();
+        foreach (List<List<Card>> inner in powerset)
+        {
+            if (!HasOverlap(inner, currentMeld))
+            {
+                List<List<Card>> temp = new List<List<Card>>();
+                temp.AddRange(inner);
+                temp.Add(currentMeld);
+                moreSets.Add(temp);
+            }
+        }
+        powerset.AddRange(moreSets);
+    }
+
+    private int GetSetOfMeldsFaceValue(List<List<Card>> setOfMelds)
+    {
+        int totalFaceValue = 0;
+        foreach (List<Card> meld in setOfMelds)
+        {
+            totalFaceValue += GetFaceValueOfList(meld);
+        }
+        return totalFaceValue;
+    }
+
+    private int GetFaceValueOfList(List<Card> list)
+    {
+        int totalFaceValue = 0;
+        foreach (Card c in list)
+        {
+            totalFaceValue += c.FaceValue;
+        }
+        return totalFaceValue;
+    }
+
+    //Return whether listOfMelds has a card that is in meld
+    private bool HasOverlap(List<List<Card>> listOfMelds, List<Card> meld)
+    {
+        HashSet<Card> set = new HashSet<Card>();
+        foreach (Card c in meld)
+        {
+            set.Add(c);
+        }
+
+        foreach(List<Card> currentMeld in listOfMelds)
+        {
+            foreach(Card c in currentMeld)
+            {
+                if (set.Contains(c))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    //CardsInHand - OptimalMelds = Deadwoods
     private void CalculateDeadwoods()
     {
-        //CardsInHand - OptimalMelds = Deadwoods
-        //Update Deadwoods list and DeadwoodPoints
+        Deadwoods.AddRange(CardsInHand);
+        foreach(List<Card> meld in OptimalMelds)
+        {
+            foreach (Card c in meld)
+            {
+                Deadwoods.Remove(c);
+            }
+        }
+        SortCardList(Deadwoods);
+        DeadwoodPoints = GetFaceValueOfList(Deadwoods);
     }
 
     private void SortCardList(List<Card> cardList)
@@ -214,13 +370,25 @@ public class PlayerHand : MonoBehaviour
     }
 
     //Function to display the hand in the UI according to the order of CardsInHand list
-    //TODO: modify so that it displays the optimal melds on the left most slots, then sorted deadwoods
-    //on the remaining slots
     private void SortHandUI()
     {
-        for (int i = 0; i < CardsInHand.Count; i++)
+        int index = 0;
+
+        //Melds on the left
+        foreach (List<Card> meld in OptimalMelds)
         {
-            CardSlotList[i].AddCard(CardsInHand[i]);
+            foreach(Card c in meld)
+            {
+                CardSlotList[index].AddCard(c);
+                index++;
+            }
+        }
+
+        //Deadwoods on the right
+        foreach(Card c in Deadwoods)
+        {
+            CardSlotList[index].AddCard(c);
+            index++;
         }
     }
 
@@ -307,18 +475,31 @@ public class PlayerHand : MonoBehaviour
         //then call CalculateAndUpdateScore in Round.cs
     }
 
-    private void Log2DList(List<List<Card>> list)
+    private void Log3DList(List<List<List<Card>>> list)
     {
-        Debug.Log("============");
-        string line = "";
-        foreach (List<Card> inner in list)
+        foreach (List<List<Card>> inner in list)
         {
-            line = ""; 
-            foreach (Card card in inner)
-            {
-                line += card.name + " ";
-            }
-            Debug.Log(line);
+            Log2DList(inner);
+            Debug.Log("---");
         }
     }
+
+    private void Log2DList(List<List<Card>> list)
+    {
+        foreach (List<Card> inner in list)
+        {
+            Log1DList(inner);
+        }
+    }
+    private void Log1DList(List<Card> list)
+    {
+        string line = "";
+        foreach (Card card in list)
+        {
+            line += card.name + " ";
+        }
+        Debug.Log(line);
+
+    }
+
 }
