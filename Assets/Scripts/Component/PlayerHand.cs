@@ -91,6 +91,7 @@ public class PlayerHand : MonoBehaviour
         CalculateDeadwoods();
 
         SortHandUI();
+        GameUI.instance.UpdateScoreUI();
     }
 
     //Function that scan the hand and put any possible sets
@@ -465,14 +466,26 @@ public class PlayerHand : MonoBehaviour
 
     public void Gin()
     {
-        //check eligibility
-        //then call CalculateAndUpdateScore in Round.cs
+        if (DeadwoodPoints == 0)
+        {
+            print("Gin works");
+            Round.instance.CalculateAndUpdateScore();
+        }
+        else if (Deadwoods.Count == 1 && CardsInHand.Count == 11)
+        {
+            print("Gin works");
+            this.DiscardCard(Deadwoods[0]);
+            Round.instance.CalculateAndUpdateScore();
+        }
     }
 
     public void Knock()
     {
-        //check eligibility
-        //then call CalculateAndUpdateScore in Round.cs
+        if (DeadwoodPoints < 10)
+        {
+            print("Knocking works");
+            Round.instance.CalculateAndUpdateScore();            
+        }
     }
 
     private void Log3DList(List<List<List<Card>>> list)

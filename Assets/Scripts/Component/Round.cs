@@ -31,10 +31,32 @@ public class Round : MonoBehaviour
     {
         CurrentTurn = newTurn;
         GameUI.instance.currentTurnText.text = "Current turn: " + newTurn.ToString();
+        GameUI.instance.UpdateScoreUI();
     }
 
     public void CalculateAndUpdateScore()
     {
+        int playerScore = PlayerHand.instance.DeadwoodPoints;
+        int AIScore = AIHand.instance.DeadwoodPoints;
+        string winner;
+        int winScore;
+        if (playerScore < AIScore)
+        {
+            winner = "ai";
+            winScore = AIScore - playerScore;
+        }
+        else if (playerScore > AIScore)
+        {
+            winner = "player";
+            winScore = playerScore - AIScore;
+        }
+        else 
+        {
+            winner = "draw";
+            winScore = 0;
+        }
+        Match.instance.UpdateMatchResult(winner, winScore);
+
         //Call UpdateMatchResult in Match.cs
     }
 
