@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Match : MonoBehaviour
 {
@@ -47,12 +48,28 @@ public class Match : MonoBehaviour
     public void UpdateMatchResult(string winner, int score)
     {
         //update
+        PlayerScore = PlayerHand.instance.DeadwoodPoints;
+        //AIScore = AIHand.instance.DeadwoodPoints;
+
         //if either +100 points, call EndMatch
+        if (PlayerScore > 50 || AIScore > 100)
+        {
+            print("Score is over 50");
+            EndMatch();
+            //Invoke("EndMatch", 1f);
+        }
         //else call DisplayRoundResult
+        else
+        {
+            Invoke("DisplayRoundResult", 1f);
+            DisplayRoundResult();
+        }
     }
 
-    public void DisplayRoundResult()
+        public void DisplayRoundResult()
     {
+
+
         //Flip cards around, requires new layout of card slots. Maybe done later as it's not super important now
         //Display round score
         //Display updated match score
@@ -63,5 +80,6 @@ public class Match : MonoBehaviour
     public void EndMatch()
     {
         //Update stats, display result scene
+        SceneManager.LoadScene(0);
     }
 }
