@@ -11,11 +11,11 @@ public class Dealer : MonoBehaviour
     public CardSlot _pickupCardSlot;
     public CardSlot _centerStackCardSlot;	
 	public CardSlot _discardStackCardSlot;
-    public CardSlot _drawStackCardSlot;
+    public CardSlot _drawStackCardSlot; //Need to flip this top card. transfer to discard pile - _discardStackCardSlot 
     public CardSlot _rightHandCardSlot;
     public CardSlot _leftHandCardSlot;
     public CardSlot _currentCardSlot;
-
+    
     public const float CardStackDelay = .01f;
 	
 	/// Counter which keeps track current dealing movements in progress.
@@ -32,7 +32,7 @@ public class Dealer : MonoBehaviour
     private void MoveCardSlotToCardSlot(CardSlot sourceCardSlot, CardSlot targetCardSlot) 
 	{
 		Card card;
-		while ((card = sourceCardSlot.TopCard()) != null)
+		while ((card = sourceCardSlot.TopCard()) != null)    
 		{
 			targetCardSlot.AddCard(card);
 		}
@@ -118,6 +118,10 @@ public class Dealer : MonoBehaviour
         MoveCardSlotToCardSlot(_centerStackCardSlot, _drawStackCardSlot);
         yield return new WaitForSeconds(.3f);
 
+        //Do a card flip after shuffle and dealing cards
+        Card _cardTopFlip = _drawStackCardSlot.TopCard();
+        _discardStackCardSlot.AddCard(_cardTopFlip);
+
         if (Match.instance.RoundCount == 0)
         {
             Match.instance.InitializeMatch();
@@ -126,3 +130,6 @@ public class Dealer : MonoBehaviour
         DealInProgress--;
     }
 }
+//Somename.addCard   -- add top card of draw pile to discard slot 
+//To get top card
+//slotvariable._topCard
