@@ -52,9 +52,9 @@ public class Match : MonoBehaviour
         //AIScore = AIHand.instance.DeadwoodPoints;
 
         //if either +100 points, call EndMatch
-        if (PlayerScore > 50 || AIScore > 100)
+        if (PlayerScore > 100 || AIScore > 100)
         {
-            print("Score is over 50");
+            print("Score is over 100");
             EndMatch();
             //Invoke("EndMatch", 1f);
         }
