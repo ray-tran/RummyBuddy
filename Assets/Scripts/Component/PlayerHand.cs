@@ -37,6 +37,7 @@ public class PlayerHand : MonoBehaviour
     public void Awake()
     {
         instance = this;
+        EmptyHand();
         CardSlotList.Add(CardSlot0);
         CardSlotList.Add(CardSlot1);
         CardSlotList.Add(CardSlot2);
@@ -50,15 +51,22 @@ public class PlayerHand : MonoBehaviour
         CardSlotList.Add(CardSlot10);
     }
 
-    //Called at start of round
-    public void InitializeHand()
+    public void EmptyHand()
     {
         CardsInHand = new List<Card>();
         SpadesList = new List<Card>();
         ClubsList = new List<Card>();
         DiamondsList = new List<Card>();
-        HeartsList= new List<Card>();
+        HeartsList = new List<Card>();
+        AllMelds = new List<List<Card>>();
+        OptimalMelds = new List<List<Card>>();
+        Deadwoods = new List<Card>();
+    }
 
+    //Called at start of round
+    public void InitializeHand()
+    {
+        EmptyHand();
         foreach (CardSlot slot in CardSlotList)
         {
             if (slot.TopCard() != null)
