@@ -36,19 +36,19 @@ public class Round : MonoBehaviour
 
     public void CalculateAndUpdateScore()
     {
-        int playerScore = PlayerHand.instance.DeadwoodPoints;
-        int AIScore = AIHand.instance.DeadwoodPoints;
+        int playerDeadwoodPoints = PlayerHand.instance.DeadwoodPoints;
+        int AIDeadwoodPoints = AIHand.instance.DeadwoodPoints;
         string winner;
         int winScore;
-        if (playerScore < AIScore)
+        if (playerDeadwoodPoints < AIDeadwoodPoints)
         {
             winner = "ai";
-            winScore = AIScore - playerScore;
+            winScore = AIDeadwoodPoints - playerDeadwoodPoints;
         }
-        else if (playerScore > AIScore)
+        else if (playerDeadwoodPoints > AIDeadwoodPoints)
         {
             winner = "player";
-            winScore = playerScore - AIScore;
+            winScore = playerDeadwoodPoints - AIDeadwoodPoints;
         }
         else 
         {

@@ -539,17 +539,26 @@ public class PlayerHand : MonoBehaviour
 
     }
 
+
+    //TODO FOR ALL 3: remove "print" after testing purposes have been completed
+
+    //Only works before card has been discarded,
+    //Consider a post-discard "turn" so players can gin after discarding themselves (not a big deal rn)
     public void Gin()
     {
-        if (DeadwoodPoints == 0)
-        {
-            print("Gin works");
-            Round.instance.CalculateAndUpdateScore();
-        }
-        else if (Deadwoods.Count == 1 && CardsInHand.Count == 11)
+        if (Deadwoods.Count == 1 && CardsInHand.Count == 11)
         {
             print("Gin works");
             this.DiscardCard(Deadwoods[0]);
+            Round.instance.CalculateAndUpdateScore();
+        }
+    }
+
+    public void BigGin()
+    {
+        if (DeadwoodPoints == 0 && CardsInHand.Count == 11)
+        {
+            print("Big Gin works");
             Round.instance.CalculateAndUpdateScore();
         }
     }
