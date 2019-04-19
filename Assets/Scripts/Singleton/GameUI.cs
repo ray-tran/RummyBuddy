@@ -16,16 +16,6 @@ public class GameUI : MonoBehaviour
         currentTurnText = scoreGO.GetComponent<Text>();
         currentTurnText.text = "Current turn: PlayerDraw";
         currentDeadwoodPointsText = deadpointsGO.GetComponent<Text>();
-
-
-	}
-
-	public void Shuffle()
-	{
-		if (Dealer.instance.DealInProgress == 0)
-		{
-            StartCoroutine(Dealer.instance.ShuffleCoroutine());
-        }
 	}
 
     //Called in Player.ScanHand() and Round.UpdateTurn()
@@ -36,6 +26,10 @@ public class GameUI : MonoBehaviour
     public void GinUI()
     {
         PlayerHand.instance.Gin();
+    }
+    public void BigGinUI()
+    {
+        PlayerHand.instance.BigGin();
     }
     public void KnockUI()
     {
