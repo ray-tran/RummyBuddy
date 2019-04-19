@@ -37,6 +37,10 @@ public class GameUI : MonoBehaviour
     {
         PlayerHand.instance.Gin();
     }
+    public void BigGinUI()
+    {
+        PlayerHand.instance.BigGin();
+    }
     public void KnockUI()
     {
         PlayerHand.instance.Knock();
