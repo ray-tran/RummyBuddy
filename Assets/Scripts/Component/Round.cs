@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Turn { PlayerDraw, PlayerDiscard, AI };
 
+//Redo Turns based on AIDraw and AIDiscard
+public enum Turn { PlayerDraw, PlayerDiscard, AIDraw, AIDiscard};
+
+//VARIABLES AND CLASS NAMES ARE AMBIGUOUS "AIHand PlayerHand"
 public class Round : MonoBehaviour
 {
     public static Round instance;

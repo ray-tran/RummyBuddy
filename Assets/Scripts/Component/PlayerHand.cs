@@ -439,7 +439,7 @@ public class PlayerHand : MonoBehaviour
 
         if (Round.instance.CurrentTurn == Turn.PlayerDiscard)
         {
-            Round.instance.UpdateTurn(Turn.AI);
+            Round.instance.UpdateTurn(Turn.AIDraw);
             AIHand.instance.AIExecuteTurn();
         }
         else

@@ -7,6 +7,17 @@ public class AIHand : PlayerHand
     public new static AIHand instance;
     private Dictionary<Card, CardSlot> KnownCards = new Dictionary<Card, CardSlot>();
     private HashSet<Card> DesiredCards = new HashSet<Card>();
+    
+    //Matrix represents cards and their locations
+    //[4] : Suits. uses CardSuit.cs 
+    //[13]: Face Value; 0 = Ace, 11 = Jack, 12 = Queen, 13 = King
+    //Values: -1 = unknown, 0 = Player Hand, 1 = AI Hand, 3 Discard Stack
+    //Will also be used for AI simulations
+    private int[,] KnownCardSet = new int[4, 13]; 
+
+    private float SimulationTimer;
+    private int[,] SimulationRunsAndWins = new int[11,2];
+
 
     public new void Awake()
     {
@@ -24,11 +35,18 @@ public class AIHand : PlayerHand
         CardSlotList.Add(CardSlot10);
     }
 
+    //TODO: Update KnownCardSet[,]
+    //Possibly remove dictionary based on KnownCards
     public void AddKnownCard(Card card, CardSlot slot)
     {
         KnownCards.Add(card, slot);
     }
 
+
+    //TODO: Search through current hand, possibly easier through matrix
+    //with matrix, find cards next to eachother in rows or columns
+    //all cards next to 2 or more possible runs or next to possible sets
+    //those inbetween to cards Ex. [...1,0,1...] The 0 would be desired
     public void UpdateDesiredCards()
     {
 
@@ -47,6 +65,13 @@ public class AIHand : PlayerHand
 
     //TODO: call monte carlo here
     //right now it's choosing a random card to discard
+
+    //WILL: Create 11x2 array based on card slots, 0 = Runs, 1 = Wins
+    //Send current known cards to AI sim
+    //Evaluate based on simulations
+    //Add runs and wins to slot
+    //Repeat based on stats and algotithm
+    //Return Card with most simulations
     private Card DecideCardToDiscard()
     {
         System.Random rnd = new System.Random();
@@ -69,6 +94,7 @@ public class AIHand : PlayerHand
     private void AIDraw()
     {
         DrawCard(DecidePileToDraw().TopCard());
+        Round.instance.UpdateTurn(Turn.AIDiscard);
         Invoke("AIDiscard", 1f);
     }
 

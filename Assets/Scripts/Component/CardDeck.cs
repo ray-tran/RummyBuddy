@@ -3,7 +3,9 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 
-public enum Suit { Spades, Clubs, Diamonds, Hearts };
+//Changed Suit Order to alphabetical, used for consistency with AI hand
+
+//public enum Suit { Clubs, Diamonds, Hearts, Spades };
 
 public class CardDeck : MonoBehaviour 
 {
@@ -81,9 +83,11 @@ public class CardDeck : MonoBehaviour
             card.FaceValue = 10;
             card.Rank = 13;
         }
+
+        //Ace's are low values in Gin Rummy 
         else if (name.Contains("ace"))
         {
-            card.FaceValue = 11;
+            card.FaceValue = 1;
             card.Rank = 1;
         }
         else
