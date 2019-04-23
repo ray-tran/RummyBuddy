@@ -6,21 +6,14 @@ public class AIHand : PlayerHand
 {
     public new static AIHand instance;
     private Dictionary<Card, CardSlot> KnownCards = new Dictionary<Card, CardSlot>();
-    private HashSet<Card> DesiredCards = new HashSet<Card>();
-    
-    //Matrix represents cards and their locations
-    //[4] : Suits. uses CardSuit.cs 
-    //[13]: Face Value; 0 = Ace, 11 = Jack, 12 = Queen, 13 = King
-    //Values: -1 = unknown, 0 = Player Hand, 1 = AI Hand, 3 Discard Stack
-    //Will also be used for AI simulations
-    private int[,] KnownCardSet = new int[4, 13]; 
+    //private HashSet<Card> DesiredCards = new HashSet<Card>();
 
     private float SimulationTimer;
     private int[,] SimulationRunsAndWins = new int[11,2];
 
-
     public new void Awake()
     {
+        MatrixValue = 1;
         instance = this;
         CardSlotList.Add(CardSlot0);
         CardSlotList.Add(CardSlot1);
@@ -35,7 +28,7 @@ public class AIHand : PlayerHand
         CardSlotList.Add(CardSlot10);
     }
 
-    //TODO: Update KnownCardSet[,]
+    //TODO: Update CurrentGameState[,]
     //Possibly remove dictionary based on KnownCards
     public void AddKnownCard(Card card, CardSlot slot)
     {
@@ -54,12 +47,43 @@ public class AIHand : PlayerHand
 
     private CardSlot DecidePileToDraw()
     {
-        //right now it's choosing the draw pile
-        //TODO: write rules
+        Card topDiscardCard = Round.instance.DiscardPile.TopCard();
+
+        Round.instance.printGameState();
+
+        Debug.Log("Top discard: " + topDiscardCard.name);
+        Debug.Log("GetContRunCount: " + Round.instance.GetContRunCount(topDiscardCard, 1));
+        Debug.Log("GetColumnValCount: " + Round.instance.GetColumnValCount(topDiscardCard, 1));
+
+        //If drawing top discard card would result in 3 cards or more in a run
+        //Or if drawing top discard card would result in 3 cards or more of same rank  
+        if (Round.instance.GetContRunCount(topDiscardCard, 1) >= 3 || Round.instance.GetColumnValCount(topDiscardCard, 1) >= 3)
+        {
+            //Temporary add card to AIHand without UI display to calculate Deadwoods
+            int origDeadwoodPoints = DeadwoodPoints;
+
+            Debug.Log("origDeadwoodPoints: " + origDeadwoodPoints);
+
+            //false flag to disable UI drawing (this is happening in the background
+            DrawCard(topDiscardCard, false);
+            int testingDeadwoodPoints = DeadwoodPoints;
+
+            Debug.Log("testingDeadwoodPoints: " + testingDeadwoodPoints);
+
+            DiscardCard(topDiscardCard, false);
+
+            if (testingDeadwoodPoints <= origDeadwoodPoints)
+                return Round.instance.DiscardPile;
+        }
+
+
+        // else
+        //choosing the draw pile
         if ((Round.instance.DrawPile.TopCard()) != null)
         {
             return Round.instance.DrawPile;
         }
+        
         return null;
     }
 
@@ -72,18 +96,17 @@ public class AIHand : PlayerHand
     //Add runs and wins to slot
     //Repeat based on stats and algotithm
     //Return Card with most simulations
+    private System.Random rnd = new System.Random();
     private Card DecideCardToDiscard()
     {
-        System.Random rnd = new System.Random();
-        CardSlot slot;
-        do
-        {
-            int randomCardIndex = rnd.Next(0, 10); // creates a number between 0 and 10
-            slot = CardSlotList[randomCardIndex];
-        } while (slot.FaceValue() == 0);
+        if (Deadwoods.Count < 11) {
 
-        return slot.TopCard();
+            //TEMPORARY STRATEGY//
+            //The last card in the sorted hand is the highest value deadwood
+            return CardSlotList[10].TopCard();
+        }
 
+        return null;
     }
 
     public void AIExecuteTurn()
@@ -93,14 +116,17 @@ public class AIHand : PlayerHand
 
     private void AIDraw()
     {
-        DrawCard(DecidePileToDraw().TopCard());
+        DrawCard(DecidePileToDraw().TopCard(), true);
+
+        //If gin or big gin then end round?
+
         Round.instance.UpdateTurn(Turn.AIDiscard);
         Invoke("AIDiscard", 1f);
     }
 
     private void AIDiscard()
     {
-        DiscardCard(DecideCardToDiscard());
+        DiscardCard(DecideCardToDiscard(), true);
     }
 
 }

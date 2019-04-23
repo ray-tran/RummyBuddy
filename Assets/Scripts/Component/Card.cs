@@ -5,8 +5,8 @@ public class Card : MonoBehaviour
 {
     public CardSlot ParentCardSlot { get; set; }
 
-    public int FaceValue { get; set; } //Face cards:10; Ace:11
-    public Suit CardSuit { get; set; } //Enum SUIT defined in CardDeck.cs
+    public int FaceValue { get; set; } //Face cards:10; Ace:1
+    public Suit CardSuit { get; set; } //Enum SUIT defined in CardSuitType.cs
     public int Rank { get; set; } //Ace:1; Jack:11; Queen:12; King:13
 
     private float _positionDamp = .2f;
@@ -42,8 +42,6 @@ public class Card : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            //    print("clicking on: " + name + "\n");
-            //    print("ParentCardSlot: " + ParentCardSlot.name + "\n");
 
             //PLAYER DRAW
             if (Round.instance.CurrentTurn == Turn.PlayerDraw)
@@ -51,7 +49,7 @@ public class Card : MonoBehaviour
                 if (ParentCardSlot.name.IndexOf("DrawStackSlot", System.StringComparison.CurrentCulture) != -1 
                 || ParentCardSlot.name.IndexOf("DiscardStackSlot", System.StringComparison.CurrentCulture) != -1)
                 {
-                    PlayerHand.instance.DrawCard(this);
+                    PlayerHand.instance.DrawCard(this, true);
                 }
             }
 
@@ -60,7 +58,7 @@ public class Card : MonoBehaviour
             {
                 if (ParentCardSlot.name.IndexOf("PlayerCardSlot", System.StringComparison.CurrentCulture) != -1)
                 {
-                    PlayerHand.instance.DiscardCard(this);
+                    PlayerHand.instance.DiscardCard(this, true);
                 }
             }
         }

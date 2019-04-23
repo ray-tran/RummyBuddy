@@ -130,6 +130,3 @@ public class Dealer : MonoBehaviour
         DealInProgress--;
     }
 }
-//Somename.addCard   -- add top card of draw pile to discard slot 
-//To get top card
-//slotvariable._topCard

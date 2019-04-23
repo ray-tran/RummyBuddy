@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class PlayerHand : MonoBehaviour
 {
+    public int MatrixValue;
     public static PlayerHand instance;
 
     public List<Card> Deadwoods;
@@ -36,6 +37,7 @@ public class PlayerHand : MonoBehaviour
 
     public void Awake()
     {
+        MatrixValue = 0;
         instance = this;
         EmptyHand();
         CardSlotList.Add(CardSlot0);
@@ -76,12 +78,11 @@ public class PlayerHand : MonoBehaviour
                 AddToSuitList(card);
             }
         }
-
-        ScanHand();
+        ScanHand(true);
     }
 
     //Scan the hand to determine what are deadwoods, runs, sets and other data
-    public void ScanHand()
+    public void ScanHand(bool UI)
     {
         AllMelds = new List<List<Card>>();
         OptimalMelds = new List<List<Card>>();
@@ -98,8 +99,11 @@ public class PlayerHand : MonoBehaviour
 
         CalculateDeadwoods();
 
-        SortHandUI();
-        GameUI.instance.UpdateScoreUI();
+        if (UI)
+        {
+            SortHandUI();
+            GameUI.instance.UpdateScoreUI();
+        }
     }
 
     //Function that scan the hand and put any possible sets
@@ -401,25 +405,31 @@ public class PlayerHand : MonoBehaviour
         }
     }
 
-    public void DrawCard(Card newCard)
+    public void DrawCard(Card newCard, bool UI)
     {
         //Add to Cards list then call Scan hand to put the new card
         //in appropriate set, run or deadwood
         CardsInHand.Add(newCard);
         AddToSuitList(newCard);
 
-        ScanHand();
+        Round.instance.PutCardInGameState(newCard, MatrixValue);
 
-        if (Round.instance.CurrentTurn == Turn.PlayerDraw)
+        ScanHand(UI);
+        //Round.instance.printGameState();
+        if (UI && Round.instance.CurrentTurn == Turn.PlayerDraw)
         {
             Round.instance.UpdateTurn(Turn.PlayerDiscard);
         }
     }
 
-    public void DiscardCard(Card card)
+    public void DiscardCard(Card card, bool UI)
     {
-        Round.instance.DiscardPile.AddCard(card);
+        if (UI)
+        {
+            Round.instance.DiscardPile.AddCard(card);
+        }
 
+        Round.instance.PutCardInGameState(card, 2);
         CardsInHand.Remove(card);
         Deadwoods.Remove(card);
         SpadesList.Remove(card);
@@ -435,16 +445,21 @@ public class PlayerHand : MonoBehaviour
             l.Remove(card);
         }
 
-        ScanHand();
+        ScanHand(UI);
 
-        if (Round.instance.CurrentTurn == Turn.PlayerDiscard)
+        if (UI)
         {
-            Round.instance.UpdateTurn(Turn.AIDraw);
-            AIHand.instance.AIExecuteTurn();
-        }
-        else
-        {
-            Round.instance.UpdateTurn(Turn.PlayerDraw);
+            Round.instance.printGameState();
+
+            if (Round.instance.CurrentTurn == Turn.PlayerDiscard)
+            {
+                Round.instance.UpdateTurn(Turn.AIDraw);
+                AIHand.instance.AIExecuteTurn();
+            }
+            else
+            {
+                Round.instance.UpdateTurn(Turn.PlayerDraw);
+            }
         }
     }
 
@@ -482,7 +497,7 @@ public class PlayerHand : MonoBehaviour
         if (Deadwoods.Count == 1 && CardsInHand.Count == 11)
         {
             print("Gin works");
-            this.DiscardCard(Deadwoods[0]);
+            this.DiscardCard(Deadwoods[0], true);
             Round.instance.CalculateAndUpdateScore();
         }
     }

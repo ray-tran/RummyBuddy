@@ -8,7 +8,7 @@ using UnityEngine;
 public class AISimulationState: Round
 {
     //Same as AI Hand KnownCardSet
-    private int[,] GameStateSet = new int[4, 13];
+    private int[,] RootGameState = new int[4, 13];
 
     //Used for evaluated hands in both Calculate functions
     private int[] AIHandEvaluation = new int[11];
@@ -22,10 +22,10 @@ public class AISimulationState: Round
 
     //On construction, GameStateSet will be generated
     //
-    public AISimulationState(Card SimDiscardedCard, int[,] KnownCardSet)
+    public AISimulationState(Card SimDiscardedCard, int[,] CurrentGameState)
     {
         ChosenCard = SimDiscardedCard;
-        GameStateSet = KnownCardSet;
+        RootGameState = CurrentGameState;
         CurrentTurn = Round.instance.CurrentTurn;
         DiscardPile = Round.instance.DiscardPile;
         FillCards();
