@@ -407,15 +407,17 @@ public class PlayerHand : MonoBehaviour
 
     public void DrawCard(Card newCard, bool UI)
     {
-        //Add to Cards list then call Scan hand to put the new card
-        //in appropriate set, run or deadwood
+        //If player draws from discard pile, then we can record this info in the matrix
+        if (MatrixValue == 0 && newCard.ParentCardSlot.name.IndexOf("DiscardStackSlot", System.StringComparison.CurrentCulture) != -1)
+            AIHand.instance.PutCardInGameState(newCard, MatrixValue);
+        else if (MatrixValue == 1)
+            AIHand.instance.PutCardInGameState(newCard, MatrixValue);
+
         CardsInHand.Add(newCard);
         AddToSuitList(newCard);
 
-        Round.instance.PutCardInGameState(newCard, MatrixValue);
-
         ScanHand(UI);
-        //Round.instance.printGameState();
+        AIHand.instance.printGameState();
         if (UI && Round.instance.CurrentTurn == Turn.PlayerDraw)
         {
             Round.instance.UpdateTurn(Turn.PlayerDiscard);
@@ -429,7 +431,7 @@ public class PlayerHand : MonoBehaviour
             Round.instance.DiscardPile.AddCard(card);
         }
 
-        Round.instance.PutCardInGameState(card, 2);
+        AIHand.instance.PutCardInGameState(card, 2);
         CardsInHand.Remove(card);
         Deadwoods.Remove(card);
         SpadesList.Remove(card);
@@ -449,7 +451,7 @@ public class PlayerHand : MonoBehaviour
 
         if (UI)
         {
-            Round.instance.printGameState();
+            AIHand.instance.printGameState();
 
             if (Round.instance.CurrentTurn == Turn.PlayerDiscard)
             {

@@ -8,13 +8,13 @@ using UnityEngine;
 public class AISimulationState: Round
 {
     //Same as AI Hand KnownCardSet
-    private int[,] RootGameState = new int[4, 13];
+    private int[,] GameState = new int[4, 13];
 
     //Used for evaluated hands in both Calculate functions
     private int[] AIHandEvaluation = new int[11];
     private int[] PlayerHandEvaluation = new int[11];
 
-    //Values: 0 = Player Hand, 1 = AI Hand, 3 Discard Stack, 4 Stock Stack
+    //Values: 0 = Player Hand, 1 = AI Hand, 2 = Discard Stack, 3 = Stock Stack
     private enum CardLocations {PlayerHand, AIHand, DiscardStack, StockStack};
     private int SimulationTurn;
     private Card ChosenCard;
@@ -22,12 +22,12 @@ public class AISimulationState: Round
 
     //On construction, GameStateSet will be generated
     //
-    public AISimulationState(Card SimDiscardedCard, int[,] CurrentGameState)
+    public AISimulationState(Card SimDiscardedCard, int[,] KnownGameState)
     {
         ChosenCard = SimDiscardedCard;
-        RootGameState = CurrentGameState;
-        CurrentTurn = Round.instance.CurrentTurn;
-        DiscardPile = Round.instance.DiscardPile;
+        GameState = KnownGameState;
+        CurrentTurn = Round.instance.CurrentTurn; //since this inherits from Round I think it already has this
+        DiscardPile = Round.instance.DiscardPile; //this too
         FillCards();
         SimulationTurn = 1;
     }
@@ -46,7 +46,8 @@ public class AISimulationState: Round
     //Increments SimulationTurn and CurrentTurn, updates GameStateSet
     private void SimulateTurnMove()
     {
-
+        //CalculateDrawCard()
+        //CalculateDiscardCard()
     }
 
     //TODO: Determines which card to draw, based on whos turn, their hand, and "Best guess" of desired cards
@@ -67,7 +68,8 @@ public class AISimulationState: Round
     //TODO: Starts simulation, returns if simulation got to "win" or "advantage" state
     //runs SimulateTurnMove until reaches game state
     public bool GetSimulation()
-    {   
+    {
+        //SimulateTurnMove()
         return true;
     }
 
