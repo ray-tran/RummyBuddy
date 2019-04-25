@@ -409,9 +409,9 @@ public class PlayerHand : MonoBehaviour
     {
         //If player draws from discard pile, then we can record this info in the matrix
         if (MatrixValue == 0 && newCard.ParentCardSlot.name.IndexOf("DiscardStackSlot", System.StringComparison.CurrentCulture) != -1)
-            AIHand.instance.PutCardInGameState(newCard, MatrixValue);
+            AIHand.instance.PutCardInGameState(AIHand.instance.KnownGameState, newCard, MatrixValue);
         else if (MatrixValue == 1)
-            AIHand.instance.PutCardInGameState(newCard, MatrixValue);
+            AIHand.instance.PutCardInGameState(AIHand.instance.KnownGameState, newCard, MatrixValue);
 
         CardsInHand.Add(newCard);
         AddToSuitList(newCard);
@@ -431,7 +431,7 @@ public class PlayerHand : MonoBehaviour
             Round.instance.DiscardPile.AddCard(card);
         }
 
-        AIHand.instance.PutCardInGameState(card, 2);
+        AIHand.instance.PutCardInGameState(AIHand.instance.KnownGameState, card, 2);
         CardsInHand.Remove(card);
         Deadwoods.Remove(card);
         SpadesList.Remove(card);

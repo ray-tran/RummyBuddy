@@ -22,10 +22,10 @@ public class AISimulationState: Round
 
     //On construction, GameStateSet will be generated
     //
-    public AISimulationState(Card SimDiscardedCard, int[,] KnownGameState)
+    public AISimulationState(Card SimDiscardedCard, int[,] simGameState)
     {
         ChosenCard = SimDiscardedCard;
-        GameState = KnownGameState;
+        GameState = simGameState;
         CurrentTurn = Round.instance.CurrentTurn; //since this inherits from Round I think it already has this
         DiscardPile = Round.instance.DiscardPile; //this too
         FillCards();
@@ -54,6 +54,7 @@ public class AISimulationState: Round
     //Returns which pile to draw from
     private int CalculateDrawCard()
     {
+
         return -1;
     } 
 

@@ -8,8 +8,8 @@ public class AIHand : PlayerHand
     private Dictionary<Card, CardSlot> KnownCards = new Dictionary<Card, CardSlot>();
     //private HashSet<Card> DesiredCards = new HashSet<Card>();
 
-    private float SimulationTimer;
-    private int[,] SimulationRunsAndWins = new int[11,2];
+    public int SimulationCount;
+    public float c;
 
     //Matrix represents cards and their locations
     //[4] : Suits. Suit { Clubs, Diamonds, Hearts, Spades };
@@ -21,7 +21,9 @@ public class AIHand : PlayerHand
 
     public new void Awake()
     {
+        SimulationCount = 1000;
         MatrixValue = 1;
+        c = Mathf.Sqrt(2);
         instance = this;
         CardSlotList.Add(CardSlot0);
         CardSlotList.Add(CardSlot1);
@@ -82,35 +84,72 @@ public class AIHand : PlayerHand
     }
 
     //TODO: call monte carlo here
-    //right now it's choosing a random card to discard
-
-    //WILL: Create 11x2 array based on card slots, 0 = Sims, 1 = Wins
+    //WILL: Create 11x2 array based on card slots, 0 = Wins, 1 = Sims
     //Send current known cards to AI sim
     //Evaluate based on simulations
     //Add runs and wins to slot
     //Repeat based on stats and algotithm
     //Return Card with most simulations
-    private System.Random rnd = new System.Random();
     private Card DecideCardToDiscard()
     {
-        if (Deadwoods.Count < 11) {
+        //We only consider which deadwood cards to discard
+        int deadwoodsCount = Deadwoods.Count;
 
+        // 2D array to store simulations result
+        // There are deadwoodsCount arrays of 2 numbers
+        // Each array tells if discarding this card will likely result in a win or not
+        // Each array of number represents: wins (index 0) over sims (index 1)
+        int[,] simsResult = new int[deadwoodsCount, 2];
+        FillMatrix(simsResult, 0);
 
+         for (int totalSims = 1; totalSims <= SimulationCount; totalSims++)
+         {
+            /*
+             * UCT = Wins/Sims + c*sqrt(Log(total sims of all choices)/Sims))
+             * exploitation component : Wins/Sims
+             * exploration component: sqrt(Log(total sims)/sims))
+             * c: trade-off between exploitation and exploration
+             * CHOOSE ONE WITH LARGEST UCT        
+             */
+            double maxUCT = 0; int maxUCTIndex = 0;
+            for (int i = 0; i < deadwoodsCount; i++)
+            {
+                int wins = simsResult[i,0]; int sims = simsResult[i,1];
+                double UCT = (wins / sims) + (c * Mathf.Sqrt(Mathf.Log(totalSims) / sims));
+                if (UCT > maxUCT)
+                {
+                    maxUCT = UCT;
+                    maxUCTIndex = i;
+                }
+            }
 
-            //Get set of cards not in melds
-            //Choose card from that set by UCT
-            //AISimulationState() constructor
-            //GetSimulation
-            //Recording
-            //Loop until you done
-            //Get one with most sism
+            int[,] simGameState = (int[,])KnownGameState.Clone(); //Create a deep copy of game state
+            PutCardInGameState(simGameState, Deadwoods[maxUCTIndex], 2); //Discard chosen card in the game state
+            AISimulationState sim = new AISimulationState(Deadwoods[maxUCTIndex], simGameState);
+            if (sim.GetSimulation())
+            {
+                simsResult[maxUCTIndex, 0]++; //If sim returns a win, update win count for this card
+            }
+            simsResult[maxUCTIndex, 1]++; //Update # of sims for this card
+         }
 
-            //TEMPORARY STRATEGY//
-            //The last card in the sorted hand is the highest value deadwood
-            return CardSlotList[10].TopCard();
+         //Choose the card with most simulations
+        double maxSimCount = 0; int maxSimCountIndex = 0;
+        for (int i = 0; i < deadwoodsCount; i++)
+        {
+            if (simsResult[i,1] > maxSimCount)
+            {
+                maxSimCount = simsResult[i, 1];
+                maxSimCountIndex = i;
+            }
         }
 
-        return null;
+        //TODO: uncomment following when AISimulationState is done
+       // return Deadwoods[maxSimCountIndex];
+
+        //TEMPORARY STRATEGY//
+        //The last card in the sorted hand is the highest value deadwood
+        return CardSlotList[10].TopCard();
     }
 
     public void InitializeGameState()
@@ -119,20 +158,20 @@ public class AIHand : PlayerHand
 
         foreach (Card card in CardsInHand)
         {
-            PutCardInGameState(card, 1);
+            PutCardInGameState(KnownGameState,card, 1);
         }
 
-        PutCardInGameState(Round.instance.DiscardPile.TopCard(), 2);
+        PutCardInGameState(KnownGameState, Round.instance.DiscardPile.TopCard(), 2);
         printGameState();
     }
 
-    public void PutCardInGameState(Card card, int val)
+    public void PutCardInGameState(int[,] gameState, Card card, int val)
     {
         //Debug.Log("Putting " + card.name + " in game state");
 
         int row = (int)card.CardSuit;
         int col = card.Rank - 1;
-        KnownGameState[row, col] = val;
+        gameState[row, col] = val;
     }
 
     //Including the card we're testing on
