@@ -14,6 +14,7 @@ public class Match : MonoBehaviour
     public int PlayerLossCount { get; set; }
     public List<List<string>> RoundResult; //e.g. [["player", "23"], ["ai","49"],...] 
                                            //means player wins first round with 23 points
+    public List<string> UpdateResult;  
 
     // Start is called before the first frame update
     void Awake()
@@ -47,31 +48,30 @@ public class Match : MonoBehaviour
 
     public void UpdateMatchResult(string winner, int score)
     {
-        //update
-        PlayerScore = PlayerHand.instance.DeadwoodPoints;
-        //AIScore = AIHand.instance.DeadwoodPoints;
+        //Add the winner and string to our updated results
+        UpdateResult.Add(winner);
+        UpdateResult.Add(score.ToString());
+
+        //Add our list of updated results to the round result list
+        RoundResult.Add(UpdateResult);
 
         //if either +100 points, call EndMatch
-        if (PlayerScore > 50 || AIScore > 100)
+        if (score > 100)
         {
             print("Score is over 50");
-            EndMatch();
-            //Invoke("EndMatch", 1f);
+            //EndMatch();
         }
         //else call DisplayRoundResult
         else
         {
-            Invoke("DisplayRoundResult", 1f);
-            DisplayRoundResult();
+            print("Score is under 50");
+            //DisplayRoundResult();
         }
     }
 
         public void DisplayRoundResult()
     {
         GameObject roundResults;
-
-        
-
         //Flip cards around, requires new layout of card slots. Maybe done later as it's not super important now
         //Display round score
         //Display updated match score

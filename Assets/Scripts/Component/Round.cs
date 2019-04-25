@@ -15,6 +15,8 @@ public class Round : MonoBehaviour
     public CardSlot DrawPile;
     private PlayerHand PlayerHand;
     private AIHand AIHand;
+    public string winner;
+    public int winScore;
 
     //Matrix represents cards and their locations
     //[4] : Suits. Suit { Clubs, Diamonds, Hearts, Spades };
@@ -34,10 +36,18 @@ public class Round : MonoBehaviour
 
     public void InitializeRound()
     {
-        UpdateTurn(Turn.PlayerDraw);
         PlayerHand.instance.InitializeHand();
         AIHand.instance.InitializeHand();
         AIHand.instance.InitializeGameState();
+
+        if (winner == "AI")
+        {
+            UpdateTurn(Turn.PlayerDraw);
+        }
+        else if (winner == "Player")
+        {
+            UpdateTurn(Turn.AIDraw);
+        }
     }
 
     public void UpdateTurn(Turn newTurn)
@@ -51,8 +61,6 @@ public class Round : MonoBehaviour
     {
         int playerDeadwoodPoints = PlayerHand.instance.DeadwoodPoints;
         int AIDeadwoodPoints = AIHand.instance.DeadwoodPoints;
-        string winner;
-        int winScore;
         if (playerDeadwoodPoints < AIDeadwoodPoints)
         {
             winner = "ai";
