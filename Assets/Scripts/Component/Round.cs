@@ -22,7 +22,16 @@ public class Round : MonoBehaviour
 
     public void InitializeRound()
     {
-        UpdateTurn(Turn.PlayerDraw);
+        //creates a random value
+        System.Random binaryrand = new System.Random(2);
+        //Makes that random value generate between 1 and 0, this in turn simulates a coin being flipped for the first turn
+        int coinFlip = binaryrand.Next(2);
+        if (coinFlip == 0)
+        {
+            UpdateTurn(Turn.PlayerDraw);
+        }
+        else UpdateTurn(Turn.AI);
+
         PlayerHand.instance.InitializeHand();
         AIHand.instance.InitializeHand();
     }
