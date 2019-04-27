@@ -54,19 +54,19 @@ public class CardDeck : MonoBehaviour
 
         if (name.Contains("clubs"))
         {
-            card.CardSuit = Suit.Clubs;
+            card.CardSuit = Card.Suit.Clubs;
         }
         else if (name.Contains("diamonds"))
         {
-            card.CardSuit = Suit.Diamonds;
+            card.CardSuit = Card.Suit.Diamonds;
         }
         else if (name.Contains("hearts"))
         {
-            card.CardSuit = Suit.Hearts;
+            card.CardSuit = Card.Suit.Hearts;
         }
         else if (name.Contains("spades"))
         {
-            card.CardSuit = Suit.Spades;
+            card.CardSuit = Card.Suit.Spades;
         }
         if (name.Contains("jack"))
         {

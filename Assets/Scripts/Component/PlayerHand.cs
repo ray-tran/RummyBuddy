@@ -469,19 +469,19 @@ public class PlayerHand : MonoBehaviour
     {
         switch (card.CardSuit)
         {
-            case Suit.Clubs:
+            case Card.Suit.Clubs:
                 ClubsList.Add(card);
                 SortCardList(ClubsList);
                 break;
-            case Suit.Diamonds:
+            case Card.Suit.Diamonds:
                 DiamondsList.Add(card);
                 SortCardList(DiamondsList);
                 break;
-            case Suit.Hearts:
+            case Card.Suit.Hearts:
                 HeartsList.Add(card);
                 SortCardList(HeartsList);
                 break;
-            case Suit.Spades:
+            case Card.Suit.Spades:
                 SpadesList.Add(card);
                 SortCardList(SpadesList);
                 break;

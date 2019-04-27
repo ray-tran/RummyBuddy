@@ -4,9 +4,9 @@ using System.Collections;
 public class Card : MonoBehaviour
 {
     public CardSlot ParentCardSlot { get; set; }
-
+    public enum Suit { Clubs, Diamonds, Hearts, Spades };
     public int FaceValue { get; set; } //Face cards:10; Ace:1
-    public Suit CardSuit { get; set; } //Enum SUIT defined in CardSuitType.cs
+    public Suit CardSuit { get; set; } //Enum SUIT defined in above
     public int Rank { get; set; } //Ace:1; Jack:11; Queen:12; King:13
 
     private float _positionDamp = .2f;
