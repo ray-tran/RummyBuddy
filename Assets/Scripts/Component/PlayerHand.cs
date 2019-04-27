@@ -96,6 +96,9 @@ public class PlayerHand : MonoBehaviour
 
         DecideOptimalMelds();
 
+        Debug.Log("-------------");
+        Log2DList(OptimalMelds);
+
         CalculateDeadwoods();
 
         SortHandUI();
@@ -119,7 +122,7 @@ public class PlayerHand : MonoBehaviour
             }
             else
             {
-                if (curSetCount > 2)
+                if (curSetCount == 3)
                 {
                     while (j < i)
                     {
@@ -129,15 +132,17 @@ public class PlayerHand : MonoBehaviour
                     AllMelds.Add(set);
                     set = new List<Card>();
                 }
+                else if (curSetCount == 4)
+                {
+                    AddAllSetsFromFourCards(j);
+                    //add all combination of 3 cards, and 4
+                }
                 curSetCount = 1;
                 curSetRank = CardsInHand[i].Rank;
-                while (j < i)
-                {
-                    j++;
-                }
+                j = i;
             }
         }
-        if (curSetCount > 2)
+        if (curSetCount == 3)
         {
             while (j < i)
             {
@@ -145,7 +150,36 @@ public class PlayerHand : MonoBehaviour
                 j++;
             }
             AllMelds.Add(set);
+            set = new List<Card>();
         }
+        else if (curSetCount == 4)
+        {
+            //add all combination of 3 cards, and 4
+            AddAllSetsFromFourCards(j);
+        }
+    }
+
+    private void AddAllSetsFromFourCards(int j)
+    {
+        List<Card> set = new List<Card>();
+        set.Add(CardsInHand[j]); set.Add(CardsInHand[j+1]); set.Add(CardsInHand[j+2]);
+        AllMelds.Add(set);
+
+        set = new List<Card>();
+        set.Add(CardsInHand[j]); set.Add(CardsInHand[j+1]); set.Add(CardsInHand[j+3]);
+        AllMelds.Add(set);
+
+        set = new List<Card>();
+        set.Add(CardsInHand[j]); set.Add(CardsInHand[j+2]); set.Add(CardsInHand[j+3]);
+        AllMelds.Add(set);
+
+        set = new List<Card>();
+        set.Add(CardsInHand[j+1]); set.Add(CardsInHand[j+2]); set.Add(CardsInHand[j+3]);
+        AllMelds.Add(set);
+
+        set = new List<Card>();
+        set.Add(CardsInHand[j]); set.Add(CardsInHand[j+1]); set.Add(CardsInHand[j+2]); set.Add(CardsInHand[j+3]);
+        AllMelds.Add(set);
     }
 
     //Function that scan the hand and put any possible runs
@@ -171,32 +205,65 @@ public class PlayerHand : MonoBehaviour
                 {
                     if (curRunCount > 2)
                     {
-                        while (j < i)
-                        {
-                            run.Add(suitList[j]);
-                            j++;
-                        }
-                        AllMelds.Add(run);
-                        run = new List<Card>();
+
+                        AddRunsToAllMelds(suitList, j, i);
                     }
                     curRunCount = 1;
                     prevCardRank = suitList[i].Rank;
-                    while (j < i)
-                    {
-                        j++;
-                    }
+                    j = i;
                 }
             }
             if (curRunCount > 2)
             {
-                while (j < i)
-                {
-                    run.Add(suitList[j]);
-                    j++;
-                }
-                AllMelds.Add(run);
+                AddRunsToAllMelds(suitList, j, i);
             }
         }
+    }
+
+    //From j to i-1
+    private void AddRunsToAllMelds(List<Card> suitList, int j, int i) 
+    {
+        List<List<Card>> allNewRuns = new List<List<Card>>();
+        List<Card> run = new List<Card>();
+        
+        for (int index = j; index < j + 3; index++)
+        {
+            run.Add(suitList[index]);
+        }
+        allNewRuns.Add(run);
+        if (i - j > 3)
+        {
+            for (int index = j + 3; index < i; index++)
+            {
+                int runsCountToCopy = index - 2;
+                List<List<Card>> temp = new List<List<Card>>();
+                temp.AddRange(allNewRuns.GetRange(allNewRuns.Count-runsCountToCopy, runsCountToCopy));
+                foreach (List<Card> meld in temp)
+                {
+                    List<Card> newMeld = MeldListCopy(meld);
+                    newMeld.Add(suitList[index]);
+                    allNewRuns.Add(newMeld);
+                }
+                run = new List<Card>();
+                for (int start = index -2 ; start <= index; start++)
+                {
+                    run.Add(suitList[start]);
+                }
+
+                allNewRuns.Add(run);
+            }
+        }
+        AllMelds.AddRange(allNewRuns);
+    }
+
+    private List<Card> MeldListCopy(List<Card> meld)
+    {
+        List<Card> copiedMeld = new List<Card>();
+        foreach (Card c in meld)
+        {
+            copiedMeld.Add(c);
+        }
+        return copiedMeld;
     }
 
     //Function to use the melds in AllMelds and decide the optimal subset of AllMelds:
@@ -472,17 +539,26 @@ public class PlayerHand : MonoBehaviour
 
     }
 
+
+    //TODO FOR ALL 3: remove "print" after testing purposes have been completed
+
+    //Only works before card has been discarded,
+    //Consider a post-discard "turn" so players can gin after discarding themselves (not a big deal rn)
     public void Gin()
     {
-        if (DeadwoodPoints == 0)
-        {
-            print("Gin works");
-            Round.instance.CalculateAndUpdateScore();
-        }
-        else if (Deadwoods.Count == 1 && CardsInHand.Count == 11)
+        if (Deadwoods.Count == 1 && CardsInHand.Count == 11)
         {
             print("Gin works");
             this.DiscardCard(Deadwoods[0]);
+            Round.instance.CalculateAndUpdateScore();
+        }
+    }
+
+    public void BigGin()
+    {
+        if (DeadwoodPoints == 0 && CardsInHand.Count == 11)
+        {
+            print("Big Gin works");
             Round.instance.CalculateAndUpdateScore();
         }
     }
