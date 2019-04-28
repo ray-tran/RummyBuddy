@@ -126,6 +126,10 @@ public class Dealer : MonoBehaviour
         {
             Match.instance.InitializeMatch();
         }
+        else
+        {
+            Round.instance.InitializeRound();
+        }
 
         DealInProgress--;
     }

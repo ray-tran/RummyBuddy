@@ -39,49 +39,76 @@ public class Match : MonoBehaviour
     { 
         if (RoundCount != 0)
         {
-            Dealer.instance.ShuffleCoroutine(); //Clean table, shuffle, deal
+            StartCoroutine(Dealer.instance.ShuffleCoroutine());//Clean table, shuffle, deal
+            //Dealer.instance.ShuffleCoroutine();
         }
-        RoundCount++;
-        Round.instance.InitializeRound();
-    }
-
-    public void UpdateMatchResult(string winner, int score)
-    {
-        //update
-        PlayerScore = PlayerHand.instance.DeadwoodPoints;
-        //AIScore = AIHand.instance.DeadwoodPoints;
-
-        //if either +100 points, call EndMatch
-        if (PlayerScore > 100 || AIScore > 100)
-        {
-            print("Score is over 100");
-            EndMatch();
-            //Invoke("EndMatch", 1f);
-        }
-        //else call DisplayRoundResult
         else
         {
-            Invoke("DisplayRoundResult", 1f);
-            DisplayRoundResult();
+            Round.instance.InitializeRound();
         }
+        RoundCount++;
     }
 
-    public void DisplayRoundResult()
+    //winType:
+    //-1: undercut
+    //0: knock
+    //1: gin
+    //2: big gin
+    public void UpdateMatchResult(string winner, int score, int winType)
     {
-        GameObject roundResults;
+        //Add the winner and string to our updated results
+        List<string> UpdateResult = new List<string>
+        {
+            winner,
+            score.ToString()
+        };
 
-        
+        if (winner == "player")
+        {
+            PlayerScore += score;
+        }
+        else if (winner == "ai")
+        {
+            AIScore += score;
+        }
 
-        //Flip cards around, requires new layout of card slots. Maybe done later as it's not super important now
-        //Display round score
-        //Display updated match score
-        //Display continue button. If continue button is clicked then call StartRound()
+        //Add our list of updated results to the round result list
+        RoundResult.Add(UpdateResult);
+
+        if (PlayerScore >= 100 || AIScore >= 100)
+        {
+            EndMatch(winner, score, winType);
+        }
+        else
+        {
+            GameUI.instance.DisplayRoundResult(winner, score, winType, false);
+        }
+
     }
 
+    //public void DisplayRoundResult(string winner, int score, int winType) 
+    //{
+    //    GameObject roundResults;
 
-    public void EndMatch()
+    //    Debug.Log("Round winner: " + winner);
+    //    Debug.Log("Winner round score: " + score);
+    //    Debug.Log("Win type round score: " + winType);
+
+    //    Debug.Log("Player match score: " + PlayerScore);
+    //    Debug.Log("AI match score: " + AIScore);
+
+
+    //    //Flip cards around, requires new layout of card slots. Maybe done later as it's not super important now
+    //    //Display round score
+    //    //Display updated match score
+    //    //Display continue button. If continue button is clicked then call StartRound()
+    //}
+
+
+    public void EndMatch(string winner, int score, int winType)
     {
         //Update stats, display result scene
-        SceneManager.LoadScene(0);
+        GameUI.instance.DisplayRoundResult(winner, score, winType, true);
+        //SceneManager.LoadScene(0);
     }
 }
