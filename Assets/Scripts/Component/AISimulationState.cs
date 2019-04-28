@@ -1,3 +1,5 @@
+//She's a little rough, but this can get basic implementation started
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -63,6 +65,7 @@ public class AISimulationState: Round
                 {
                     case (int) CardLocations.PlayerHand:
                         PlayerHandKnownSize++;
+                        PlayerHand.CardsInHand.Add(this.GenerateCard(i,j));
                         UnknownDeckSize--;
                         break;
                     case -1:
@@ -75,12 +78,14 @@ public class AISimulationState: Round
 
         //Fill rest of PlayerHand based on unknowns
         //Choose Random cards To fill PlayerHand
+        //Create Card and add to PlayerHand
         //Remove card from unknown spot list
         //Increment KnownPlayerHandsize
         while (PlayerHandKnownSize < PlayerHandSize)
         {
             RandomSpot = rand.Next(0, UnknownSpots.Count - 1);
             GameState[UnknownSpots[RandomSpot].Item1,UnknownSpots[RandomSpot].Item2] = (int) CardLocations.PlayerHand;
+            PlayerHand.CardsInHand.Add(this.GenerateCard(UnknownSpots[RandomSpot].Item1, UnknownSpots[RandomSpot].Item2));
             UnknownSpots.RemoveAt(RandomSpot);
             PlayerHandKnownSize++;
         }
@@ -137,7 +142,8 @@ public class AISimulationState: Round
                 {
                     (int,int) GameStateCard = CardToStateLocation(DrawPile.TopCard());
                     GameState[GameStateCard.Item1,GameStateCard.Item2] = (int) CardLocations.PlayerHand;
-                    this.PlayerHand.CardsInHand.Add(this.DrawPile.TopCard());
+                    this.PlayerHand.DrawCard(DrawPile.TopCard(), false);
+                    //this.PlayerHand.CardsInHand.Add(this.DrawPile.TopCard());
                     this.DrawPile.CardList.Remove(this.DrawPile.TopCard());
 
                 }
@@ -145,8 +151,9 @@ public class AISimulationState: Round
                 {
                     (int,int) GameStateCard = CardToStateLocation(DiscardPile.TopCard());
                     GameState[GameStateCard.Item1,GameStateCard.Item2] = (int) CardLocations.PlayerHand;
-                    this.PlayerHand.CardsInHand.Add(this.DiscardPile.TopCard());
-                    this.DrawPile.CardList.Remove(this.DiscardPile.TopCard());
+                    this.PlayerHand.DrawCard(this.DiscardPile.TopCard(), false);
+                    //PlayerHand.CardsInHand.Add(this.DiscardPile.TopCard());
+                    this.DiscardPile.CardList.Remove(this.DiscardPile.TopCard());
                 }
                 break;
             case Turn.AIDraw:
@@ -155,7 +162,8 @@ public class AISimulationState: Round
                 {
                     (int,int) GameStateCard = CardToStateLocation(DrawPile.TopCard());
                     GameState[GameStateCard.Item1,GameStateCard.Item2] = (int) CardLocations.AIHand;
-                    this.AIHand.CardsInHand.Add(this.DrawPile.TopCard());
+                    this.AIHand.DrawCard(this.DrawPile.TopCard(), false);
+                    //AIHand.CardsInHand.Add(DrawPile.TopCard());
                     this.DrawPile.CardList.Remove(this.DrawPile.TopCard());
 
                 }
@@ -163,8 +171,9 @@ public class AISimulationState: Round
                 {
                     (int,int) GameStateCard = CardToStateLocation(DiscardPile.TopCard());
                     GameState[GameStateCard.Item1,GameStateCard.Item2] = (int) CardLocations.AIHand;
-                    this.AIHand.CardsInHand.Add(this.DiscardPile.TopCard());
-                    this.DrawPile.CardList.Remove(this.DiscardPile.TopCard());
+                    this.AIHand.DrawCard(this.DiscardPile.TopCard(), false);
+                    //this.AIHand.CardsInHand.Add(this.DiscardPile.TopCard());
+                    this.DiscardPile.CardList.Remove(this.DiscardPile.TopCard());
 
                 }
                 break;
@@ -206,21 +215,14 @@ public class AISimulationState: Round
             
             if (currentHand == CardLocations.PlayerHand)
             {
-                if(this.PlayerHand.CardsInHand.Exists(Card => NewCard))
-                {
-                    this.PlayerHand.CardsInHand.Remove(NewCard);
-                }
+                this.PlayerHand.CardsInHand.Remove(NewCard);
             }
             else 
             {
-                if(this.AIHand.CardsInHand.Exists(Card => NewCard))
-                {
-                    this.AIHand.CardsInHand.Remove(NewCard);
-                }
+               this.AIHand.CardsInHand.Remove(NewCard);
             }
-
             this.DiscardPile.AddCard(NewCard);
-            Destroy(NewCard);
+            //Destroy(NewCard);
         }
     }
 
@@ -313,13 +315,25 @@ public class AISimulationState: Round
         return cardLocation;
     }
 
-    //TODO: Starts simulation, returns if simulation got to "win" or "advantage" state
+    //Starts simulation, returns if simulation got to "win" or "advantage" state
     //runs SimulateTurnMove until reaches game state
     public bool GetSimulation()
     {
+        bool AIWin = false;
+        this.AIHand.DiscardCard(ChosenCard, false);
+        this.DiscardPile.CardList.Remove(ChosenCard);
+
         SimulateTurnMove();
-        //Evaluation step
-        return true;
+
+        this.AIHand.ScanHand(false);
+        this.PlayerHand.ScanHand(false);
+
+        if (AIHand.DeadwoodPoints < PlayerHand.DeadwoodPoints)
+        {
+            AIWin = true;
+        }
+
+        return AIWin;
     }
 
 
