@@ -322,6 +322,7 @@ public class AISimulationState: Round
         bool AIWin = false;
         this.AIHand.DiscardCard(ChosenCard, false);
         this.DiscardPile.CardList.Remove(ChosenCard);
+        CurrentTurn = Turn.PlayerDraw;
 
         SimulateTurnMove();
 
