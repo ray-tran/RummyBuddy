@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerHand : MonoBehaviour
 {
     public static PlayerHand instance;
+    protected int InstanceType; //0: PlayerHand, 1: AIHand
 
     public List<Card> Deadwoods;
     public int DeadwoodPoints;
@@ -37,6 +38,7 @@ public class PlayerHand : MonoBehaviour
     public void Awake()
     {
         instance = this;
+        InstanceType = 0;
         EmptyHand();
         CardSlotList.Add(CardSlot0);
         CardSlotList.Add(CardSlot1);
@@ -95,9 +97,6 @@ public class PlayerHand : MonoBehaviour
         ScanForRuns(HeartsList);
 
         DecideOptimalMelds();
-
-        Debug.Log("-------------");
-        Log2DList(OptimalMelds);
 
         CalculateDeadwoods();
 
@@ -235,7 +234,7 @@ public class PlayerHand : MonoBehaviour
         {
             for (int index = j + 3; index < i; index++)
             {
-                int runsCountToCopy = index - 2;
+                int runsCountToCopy = index - j - 2;
                 List<List<Card>> temp = new List<List<Card>>();
                 temp.AddRange(allNewRuns.GetRange(allNewRuns.Count-runsCountToCopy, runsCountToCopy));
                 foreach (List<Card> meld in temp)
@@ -550,7 +549,7 @@ public class PlayerHand : MonoBehaviour
         {
             print("Gin works");
             this.DiscardCard(Deadwoods[0]);
-            Round.instance.CalculateAndUpdateScore();
+            Round.instance.CalculateAndUpdateScore(1, InstanceType);
         }
     }
 
@@ -559,7 +558,7 @@ public class PlayerHand : MonoBehaviour
         if (DeadwoodPoints == 0 && CardsInHand.Count == 11)
         {
             print("Big Gin works");
-            Round.instance.CalculateAndUpdateScore();
+            Round.instance.CalculateAndUpdateScore(2, InstanceType);
         }
     }
 
@@ -568,7 +567,7 @@ public class PlayerHand : MonoBehaviour
         if (DeadwoodPoints < 10)
         {
             print("Knocking works");
-            Round.instance.CalculateAndUpdateScore();            
+            Round.instance.CalculateAndUpdateScore(0, InstanceType);            
         }
     }
 

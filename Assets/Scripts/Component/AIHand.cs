@@ -10,6 +10,7 @@ public class AIHand : PlayerHand
 
     public new void Awake()
     {
+        InstanceType = 1;
         instance = this;
         CardSlotList.Add(CardSlot0);
         CardSlotList.Add(CardSlot1);
