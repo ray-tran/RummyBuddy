@@ -68,7 +68,6 @@ public class Match : MonoBehaviour
 
     public void DisplayRoundResult()
     {
-        GameObject roundResults;
 
         
 
