@@ -235,3 +235,4 @@ QualitySettings:
     XBOX360: 3
     XboxOne: 3
     iPhone: 5
+    tvOS: 0

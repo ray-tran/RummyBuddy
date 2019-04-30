@@ -199,5 +199,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bad433c684df94e8ebdcb2ac245f2e7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _positionDamp: 0.2
-  _rotationDamp: 0.2

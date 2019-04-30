@@ -107,10 +107,16 @@ public class Dealer : MonoBehaviour
     {
         DealInProgress++;
 
+        System.Random random = new System.Random();
+
         for (int i = 0; i < 10; i++)
         {
+            int randomIndex = random.Next(0, _centerStackCardSlot.GetSize());
+            _centerStackCardSlot.AddCard(_centerStackCardSlot.GetCard(randomIndex));
             PlayerHand.instance.CardSlotList[i].AddCard(_centerStackCardSlot.TopCard());
             yield return new WaitForSeconds(.05f);
+            randomIndex = random.Next(0, _centerStackCardSlot.GetSize());
+            _centerStackCardSlot.AddCard(_centerStackCardSlot.GetCard(randomIndex));
             AIHand.instance.CardSlotList[i].AddCard(_centerStackCardSlot.TopCard());
             yield return new WaitForSeconds(.05f);
         }
@@ -125,6 +131,10 @@ public class Dealer : MonoBehaviour
         if (Match.instance.RoundCount == 0)
         {
             Match.instance.InitializeMatch();
+        }
+        else
+        {
+            Round.instance.InitializeRound();
         }
 
         DealInProgress--;

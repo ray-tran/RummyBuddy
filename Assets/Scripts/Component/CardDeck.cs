@@ -15,7 +15,19 @@ public class CardDeck : MonoBehaviour
     public void InstanatiateDeck(string cardBundlePath)
 	{
 		AssetBundle cardBundle = BundleSingleton.Instance.LoadBundle(DirectoryUtility.ExternalAssets() + cardBundlePath);
-		string[] nameArray = cardBundle.GetAllAssetNames();
+        string[] nameArray = cardBundle.GetAllAssetNames();
+
+        //string[] nameArray = new string[10];
+        //nameArray[0] = "4_of_hearts";
+        //nameArray[1] = "4_of_spades";
+        //nameArray[2] = "4_of_diamonds";
+        //nameArray[3] = "4_of_clubs";
+        //nameArray[4] = "3_of_clubs";
+        //nameArray[5] = "5_of_clubs";
+        //nameArray[6] = "2_of_hearts";
+        //nameArray[7] = "3_of_hearts";
+        //nameArray[8] = "9_of_hearts";
+        //nameArray[9] = "9_of_spades";
 
         shuffleArray(nameArray);
 
@@ -83,7 +95,7 @@ public class CardDeck : MonoBehaviour
         }
         else if (name.Contains("ace"))
         {
-            card.FaceValue = 11;
+            card.FaceValue = 1;
             card.Rank = 1;
         }
         else
