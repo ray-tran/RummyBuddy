@@ -41,8 +41,27 @@ public class CardSlot : MonoBehaviour
 			return null;
 		}	
 	}
-    
-	public Card BottomCard()
+
+    public Card GetCard(int index)
+    {
+        if (CardList.Count > index)
+        {
+            return CardList[index];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public int GetSize()
+    {
+        return CardList.Count;
+    }
+
+
+
+    public Card BottomCard()
 	{
 		if (CardList.Count > 0)
 		{

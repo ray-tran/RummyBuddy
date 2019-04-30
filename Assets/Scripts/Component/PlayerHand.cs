@@ -479,10 +479,13 @@ public class PlayerHand : MonoBehaviour
         if (Round.instance.CurrentTurn == Turn.PlayerDraw)
         {
             Round.instance.UpdateTurn(Turn.PlayerDiscard);
+            CheckLegalEndRoundMove();
         }
     }
 
-    public void DiscardCard(Card card)
+    //bool endRound: pass in true only if this is the last discard automatic
+    //that happens after calling gin or knock
+    public void DiscardCard(Card card, bool endRound)
     {
         Round.instance.DiscardPile.AddCard(card);
 
@@ -503,14 +506,18 @@ public class PlayerHand : MonoBehaviour
 
         ScanHand();
 
-        if (Round.instance.CurrentTurn == Turn.PlayerDiscard)
+        if (!endRound)
         {
-            Round.instance.UpdateTurn(Turn.AI);
-            AIHand.instance.AIExecuteTurn();
-        }
-        else
-        {
-            Round.instance.UpdateTurn(Turn.PlayerDraw);
+            if (Round.instance.CurrentTurn == Turn.PlayerDiscard)
+            {
+                GameUI.instance.DisableEndRoundMoveButton();
+                Round.instance.UpdateTurn(Turn.AI);
+                AIHand.instance.AIExecuteTurn();
+            }
+            else
+            {
+                Round.instance.UpdateTurn(Turn.PlayerDraw);
+            }
         }
     }
 
@@ -538,6 +545,30 @@ public class PlayerHand : MonoBehaviour
 
     }
 
+    //End round call type:
+    //0: knock
+    //1: gin
+    //2: big gin
+    private void CheckLegalEndRoundMove()
+    {
+        //BIG GIN legal
+        if (Deadwoods.Count == 0)
+        {
+            GameUI.instance.DisplayEndRoundMoveButton(2);
+        }
+
+        //GIN leagl
+        else if (Deadwoods.Count == 1)
+        {
+            GameUI.instance.DisplayEndRoundMoveButton(1);
+        }
+
+        //KNOCK legal
+        else if ((DeadwoodPoints - Deadwoods[Deadwoods.Count-1].FaceValue) < 10)
+        {
+            GameUI.instance.DisplayEndRoundMoveButton(0);
+        }
+    }
 
     //TODO FOR ALL 3: remove "print" after testing purposes have been completed
 
@@ -545,30 +576,19 @@ public class PlayerHand : MonoBehaviour
     //Consider a post-discard "turn" so players can gin after discarding themselves (not a big deal rn)
     public void Gin()
     {
-        if (Deadwoods.Count == 1 && CardsInHand.Count == 11)
-        {
-            print("Gin works");
-            this.DiscardCard(Deadwoods[0]);
-            Round.instance.CalculateAndUpdateScore(1, InstanceType);
-        }
+        DiscardCard(Deadwoods[0], true);
+        Round.instance.CalculateAndUpdateScore(1, InstanceType);
     }
 
     public void BigGin()
     {
-        if (DeadwoodPoints == 0 && CardsInHand.Count == 11)
-        {
-            print("Big Gin works");
-            Round.instance.CalculateAndUpdateScore(2, InstanceType);
-        }
+        Round.instance.CalculateAndUpdateScore(2, InstanceType);
     }
 
     public void Knock()
     {
-        if (DeadwoodPoints < 10)
-        {
-            print("Knocking works");
-            Round.instance.CalculateAndUpdateScore(0, InstanceType);            
-        }
+        DiscardCard(Deadwoods[Deadwoods.Count - 1], true);
+        Round.instance.CalculateAndUpdateScore(0, InstanceType);
     }
 
     private void Log3DList(List<List<List<Card>>> list)
