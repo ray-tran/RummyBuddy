@@ -46,7 +46,7 @@ public class Card : MonoBehaviour
             //PLAYER DRAW
             if (Round.instance.CurrentTurn == Turn.PlayerDraw)
             {
-                if (ParentCardSlot.name.IndexOf("DrawStackSlot", System.StringComparison.CurrentCulture) != -1 
+                if (ParentCardSlot.name.IndexOf("DrawStackSlot", System.StringComparison.CurrentCulture) != -1
                 || ParentCardSlot.name.IndexOf("DiscardStackSlot", System.StringComparison.CurrentCulture) != -1)
                 {
                     PlayerHand.instance.DrawCard(this, true);
@@ -58,7 +58,7 @@ public class Card : MonoBehaviour
             {
                 if (ParentCardSlot.name.IndexOf("PlayerCardSlot", System.StringComparison.CurrentCulture) != -1)
                 {
-                    PlayerHand.instance.DiscardCard(this, true);
+                    PlayerHand.instance.DiscardCard(this, true, false);
                 }
             }
         }
@@ -118,4 +118,3 @@ public class Card : MonoBehaviour
         GetComponent<Renderer>().material.mainTexture = null;
     }
 }
-

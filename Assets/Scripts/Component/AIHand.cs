@@ -24,6 +24,7 @@ public class AIHand : PlayerHand
         SimulationCount = 1000;
         MatrixValue = 1;
         c = Mathf.Sqrt(2);
+        InstanceType = 1;
         instance = this;
         CardSlotList.Add(CardSlot0);
         CardSlotList.Add(CardSlot1);
@@ -50,9 +51,9 @@ public class AIHand : PlayerHand
         Card topDiscardCard = Round.instance.DiscardPile.TopCard();
 
         printGameState();
-        
+
         //If drawing top discard card would result in 3 cards or more in a run
-        //Or if drawing top discard card would result in 3 cards or more of same rank  
+        //Or if drawing top discard card would result in 3 cards or more of same rank
         if (GetContRunCount(topDiscardCard, 1) >= 3 || GetColumnValCount(topDiscardCard, 1) >= 3)
         {
             //Temporary add card to AIHand without UI display to calculate Deadwoods
@@ -60,13 +61,13 @@ public class AIHand : PlayerHand
 
             //Debug.Log("origDeadwoodPoints: " + origDeadwoodPoints);
 
-            //false flag to disable UI drawing (this is happening in the background
-            DrawCard(topDiscardCard, false);
+            //false flag to disable UI drawing (this is happening in the background)
+            DrawCard(topDiscardCard, false, false);
             int testingDeadwoodPoints = DeadwoodPoints;
 
             //Debug.Log("testingDeadwoodPoints: " + testingDeadwoodPoints);
 
-            DiscardCard(topDiscardCard, false);
+            DiscardCard(topDiscardCard, false, false);
 
             if (testingDeadwoodPoints <= origDeadwoodPoints)
                 return Round.instance.DiscardPile;
@@ -79,7 +80,7 @@ public class AIHand : PlayerHand
         {
             return Round.instance.DrawPile;
         }
-        
+
         return null;
     }
 
@@ -92,7 +93,7 @@ public class AIHand : PlayerHand
     //Return Card with most simulations
     private Card DecideCardToDiscard()
     {
-        //TODO: Uncomment when testing AISimulationState 
+        //TODO: Uncomment when testing AISimulationState
         /*
         //We only consider which deadwood cards to discard
         int deadwoodsCount = Deadwoods.Count;
@@ -106,12 +107,12 @@ public class AIHand : PlayerHand
 
          for (int totalSims = 1; totalSims <= SimulationCount; totalSims++)
          {
-            
+
              // UCT = Wins/Sims + c*sqrt(Log(total sims of all choices)/Sims))
              // exploitation component : Wins/Sims
              // exploration component: sqrt(Log(total sims)/sims))
              // c: trade-off between exploitation and exploration
-             // CHOOSE ONE WITH LARGEST UCT        
+             // CHOOSE ONE WITH LARGEST UCT
 
             double maxUCT = 0; int maxUCTIndex = 0;
             for (int i = 0; i < deadwoodsCount; i++)
@@ -303,7 +304,7 @@ public class AIHand : PlayerHand
 
     private void AIDiscard()
     {
-        DiscardCard(DecideCardToDiscard(), true);
+        DiscardCard(DecideCardToDiscard(), true, false);
     }
 
 }

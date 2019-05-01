@@ -7,6 +7,7 @@ public class PlayerHand : MonoBehaviour
 {
     public int MatrixValue;
     public static PlayerHand instance;
+    protected int InstanceType; //0: PlayerHand, 1: AIHand
 
     public List<Card> Deadwoods;
     public int DeadwoodPoints;
@@ -39,6 +40,7 @@ public class PlayerHand : MonoBehaviour
     {
         MatrixValue = 0;
         instance = this;
+        InstanceType = 0;
         EmptyHand();
         CardSlotList.Add(CardSlot0);
         CardSlotList.Add(CardSlot1);
@@ -123,7 +125,7 @@ public class PlayerHand : MonoBehaviour
             }
             else
             {
-                if (curSetCount > 2)
+                if (curSetCount == 3)
                 {
                     while (j < i)
                     {
@@ -133,15 +135,17 @@ public class PlayerHand : MonoBehaviour
                     AllMelds.Add(set);
                     set = new List<Card>();
                 }
+                else if (curSetCount == 4)
+                {
+                    AddAllSetsFromFourCards(j);
+                    //add all combination of 3 cards, and 4
+                }
                 curSetCount = 1;
                 curSetRank = CardsInHand[i].Rank;
-                while (j < i)
-                {
-                    j++;
-                }
+                j = i;
             }
         }
-        if (curSetCount > 2)
+        if (curSetCount == 3)
         {
             while (j < i)
             {
@@ -149,7 +153,36 @@ public class PlayerHand : MonoBehaviour
                 j++;
             }
             AllMelds.Add(set);
+            set = new List<Card>();
         }
+        else if (curSetCount == 4)
+        {
+            //add all combination of 3 cards, and 4
+            AddAllSetsFromFourCards(j);
+        }
+    }
+
+    private void AddAllSetsFromFourCards(int j)
+    {
+        List<Card> set = new List<Card>();
+        set.Add(CardsInHand[j]); set.Add(CardsInHand[j+1]); set.Add(CardsInHand[j+2]);
+        AllMelds.Add(set);
+
+        set = new List<Card>();
+        set.Add(CardsInHand[j]); set.Add(CardsInHand[j+1]); set.Add(CardsInHand[j+3]);
+        AllMelds.Add(set);
+
+        set = new List<Card>();
+        set.Add(CardsInHand[j]); set.Add(CardsInHand[j+2]); set.Add(CardsInHand[j+3]);
+        AllMelds.Add(set);
+
+        set = new List<Card>();
+        set.Add(CardsInHand[j+1]); set.Add(CardsInHand[j+2]); set.Add(CardsInHand[j+3]);
+        AllMelds.Add(set);
+
+        set = new List<Card>();
+        set.Add(CardsInHand[j]); set.Add(CardsInHand[j+1]); set.Add(CardsInHand[j+2]); set.Add(CardsInHand[j+3]);
+        AllMelds.Add(set);
     }
 
     //Function that scan the hand and put any possible runs
@@ -175,36 +208,69 @@ public class PlayerHand : MonoBehaviour
                 {
                     if (curRunCount > 2)
                     {
-                        while (j < i)
-                        {
-                            run.Add(suitList[j]);
-                            j++;
-                        }
-                        AllMelds.Add(run);
-                        run = new List<Card>();
+
+                        AddRunsToAllMelds(suitList, j, i);
                     }
                     curRunCount = 1;
                     prevCardRank = suitList[i].Rank;
-                    while (j < i)
-                    {
-                        j++;
-                    }
+                    j = i;
                 }
             }
             if (curRunCount > 2)
             {
-                while (j < i)
-                {
-                    run.Add(suitList[j]);
-                    j++;
-                }
-                AllMelds.Add(run);
+                AddRunsToAllMelds(suitList, j, i);
             }
         }
     }
 
+    //From j to i-1
+    private void AddRunsToAllMelds(List<Card> suitList, int j, int i)
+    {
+        List<List<Card>> allNewRuns = new List<List<Card>>();
+        List<Card> run = new List<Card>();
+
+        for (int index = j; index < j + 3; index++)
+        {
+            run.Add(suitList[index]);
+        }
+        allNewRuns.Add(run);
+        if (i - j > 3)
+        {
+            for (int index = j + 3; index < i; index++)
+            {
+                int runsCountToCopy = index - j - 2;
+                List<List<Card>> temp = new List<List<Card>>();
+                temp.AddRange(allNewRuns.GetRange(allNewRuns.Count-runsCountToCopy, runsCountToCopy));
+                foreach (List<Card> meld in temp)
+                {
+                    List<Card> newMeld = MeldListCopy(meld);
+                    newMeld.Add(suitList[index]);
+                    allNewRuns.Add(newMeld);
+                }
+                run = new List<Card>();
+                for (int start = index -2 ; start <= index; start++)
+                {
+                    run.Add(suitList[start]);
+                }
+
+                allNewRuns.Add(run);
+            }
+        }
+        AllMelds.AddRange(allNewRuns);
+    }
+
+    private List<Card> MeldListCopy(List<Card> meld)
+    {
+        List<Card> copiedMeld = new List<Card>();
+        foreach (Card c in meld)
+        {
+            copiedMeld.Add(c);
+        }
+        return copiedMeld;
+    }
+
     //Function to use the melds in AllMelds and decide the optimal subset of AllMelds:
-    //meaning no overlap in cards (each card appear only once) 
+    //meaning no overlap in cards (each card appear only once)
     //and have the highest total face value (consequentially lowest total deadwood value)
     private void DecideOptimalMelds()
     {
@@ -421,10 +487,13 @@ public class PlayerHand : MonoBehaviour
         if (UI && Round.instance.CurrentTurn == Turn.PlayerDraw)
         {
             Round.instance.UpdateTurn(Turn.PlayerDiscard);
+            CheckLegalEndRoundMove();
         }
     }
 
-    public void DiscardCard(Card card, bool UI)
+    //bool endRound: pass in true only if this is the last discard automatic
+    //that happens after calling gin or knock
+    public void DiscardCard(Card card, bool UI, bool endRound)
     {
         if (UI)
         {
@@ -449,12 +518,11 @@ public class PlayerHand : MonoBehaviour
 
         ScanHand(UI);
 
-        if (UI)
+        if (UI && !endRound)
         {
-            AIHand.instance.printGameState();
-
             if (Round.instance.CurrentTurn == Turn.PlayerDiscard)
             {
+                GameUI.instance.DisableEndRoundMoveButton();
                 Round.instance.UpdateTurn(Turn.AIDraw);
                 AIHand.instance.AIExecuteTurn();
             }
@@ -489,6 +557,30 @@ public class PlayerHand : MonoBehaviour
 
     }
 
+    //End round call type:
+    //0: knock
+    //1: gin
+    //2: big gin
+    private void CheckLegalEndRoundMove()
+    {
+        //BIG GIN legal
+        if (Deadwoods.Count == 0)
+        {
+            GameUI.instance.DisplayEndRoundMoveButton(2);
+        }
+
+        //GIN leagl
+        else if (Deadwoods.Count == 1)
+        {
+            GameUI.instance.DisplayEndRoundMoveButton(1);
+        }
+
+        //KNOCK legal
+        else if ((DeadwoodPoints - Deadwoods[Deadwoods.Count-1].FaceValue) < 10)
+        {
+            GameUI.instance.DisplayEndRoundMoveButton(0);
+        }
+    }
 
     //TODO FOR ALL 3: remove "print" after testing purposes have been completed
 
@@ -496,30 +588,19 @@ public class PlayerHand : MonoBehaviour
     //Consider a post-discard "turn" so players can gin after discarding themselves (not a big deal rn)
     public void Gin()
     {
-        if (Deadwoods.Count == 1 && CardsInHand.Count == 11)
-        {
-            print("Gin works");
-            this.DiscardCard(Deadwoods[0], true);
-            Round.instance.CalculateAndUpdateScore();
-        }
+        DiscardCard(Deadwoods[0], true, true);
+        Round.instance.CalculateAndUpdateScore(1, InstanceType);
     }
 
     public void BigGin()
     {
-        if (DeadwoodPoints == 0 && CardsInHand.Count == 11)
-        {
-            print("Big Gin works");
-            Round.instance.CalculateAndUpdateScore();
-        }
+        Round.instance.CalculateAndUpdateScore(2, InstanceType);
     }
 
     public void Knock()
     {
-        if (DeadwoodPoints < 10)
-        {
-            print("Knocking works");
-            Round.instance.CalculateAndUpdateScore();            
-        }
+        DiscardCard(Deadwoods[Deadwoods.Count - 1], true, true);
+        Round.instance.CalculateAndUpdateScore(0, InstanceType);
     }
 
     private void Log3DList(List<List<List<Card>>> list)
