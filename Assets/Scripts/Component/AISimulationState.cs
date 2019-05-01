@@ -320,7 +320,7 @@ public class AISimulationState: Round
     public bool GetSimulation()
     {
         bool AIWin = false;
-        this.AIHand.DiscardCard(ChosenCard, false);
+        this.AIHand.DiscardCard(ChosenCard, false, false);
         this.DiscardPile.CardList.Remove(ChosenCard);
         CurrentTurn = Turn.PlayerDraw;
 
