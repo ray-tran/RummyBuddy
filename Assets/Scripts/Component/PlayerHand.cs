@@ -487,7 +487,11 @@ public class PlayerHand : MonoBehaviour
         if (UI && Round.instance.CurrentTurn == Turn.PlayerDraw)
         {
             Round.instance.UpdateTurn(Turn.PlayerDiscard);
-            CheckLegalEndRoundMove();
+            int legalEndRoundMove = CheckLegalEndRoundMove();
+            if (legalEndRoundMove != -1)
+            {
+                GameUI.instance.DisplayEndRoundMoveButton(legalEndRoundMove);
+            }
         }
     }
 
@@ -561,25 +565,33 @@ public class PlayerHand : MonoBehaviour
     //0: knock
     //1: gin
     //2: big gin
-    private void CheckLegalEndRoundMove()
+    //-1: no legal move
+    protected int CheckLegalEndRoundMove()
     {
         //BIG GIN legal
         if (Deadwoods.Count == 0)
         {
-            GameUI.instance.DisplayEndRoundMoveButton(2);
+            return 2;
         }
 
         //GIN leagl
         else if (Deadwoods.Count == 1)
         {
-            GameUI.instance.DisplayEndRoundMoveButton(1);
+            return 1;
         }
 
         //KNOCK legal
         else if ((DeadwoodPoints - Deadwoods[Deadwoods.Count-1].FaceValue) < 10)
         {
-            GameUI.instance.DisplayEndRoundMoveButton(0);
+            return 0;
         }
+
+        return -1;
+    }
+
+    private void DisplayLegalEndRoundButton()
+    {
+
     }
 
     //TODO FOR ALL 3: remove "print" after testing purposes have been completed

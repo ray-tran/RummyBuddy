@@ -62,7 +62,7 @@ public class AIHand : PlayerHand
             //Debug.Log("origDeadwoodPoints: " + origDeadwoodPoints);
 
             //false flag to disable UI drawing (this is happening in the background)
-            DrawCard(topDiscardCard, false, false);
+            DrawCard(topDiscardCard, false);
             int testingDeadwoodPoints = DeadwoodPoints;
 
             //Debug.Log("testingDeadwoodPoints: " + testingDeadwoodPoints);
@@ -296,10 +296,30 @@ public class AIHand : PlayerHand
     {
         DrawCard(DecidePileToDraw().TopCard(), true);
 
-        //If gin or big gin then end round?
 
-        Round.instance.UpdateTurn(Turn.AIDiscard);
-        Invoke("AIDiscard", 1f);
+        int legalEndRoundType = CheckLegalEndRoundMove();
+
+        //End round call type:
+        //0: knock
+        //1: gin
+        //2: big gin
+        //-1: no legal end round move
+        switch (legalEndRoundType)
+        {
+            case 0:
+                Knock();
+                break;
+            case 1:
+                Gin();
+                break;
+            case 2:
+                BigGin();
+                break;
+            case -1:
+                Round.instance.UpdateTurn(Turn.AIDiscard);
+                Invoke("AIDiscard", 1f);
+                break;
+        }
     }
 
     private void AIDiscard()
