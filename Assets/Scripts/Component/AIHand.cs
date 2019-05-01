@@ -58,13 +58,13 @@ public class AIHand : PlayerHand
             //Temporary add card to AIHand without UI display to calculate Deadwoods
             int origDeadwoodPoints = DeadwoodPoints;
 
-            Debug.Log("origDeadwoodPoints: " + origDeadwoodPoints);
+            //Debug.Log("origDeadwoodPoints: " + origDeadwoodPoints);
 
             //false flag to disable UI drawing (this is happening in the background
             DrawCard(topDiscardCard, false);
             int testingDeadwoodPoints = DeadwoodPoints;
 
-            Debug.Log("testingDeadwoodPoints: " + testingDeadwoodPoints);
+            //Debug.Log("testingDeadwoodPoints: " + testingDeadwoodPoints);
 
             DiscardCard(topDiscardCard, false);
 
@@ -92,6 +92,8 @@ public class AIHand : PlayerHand
     //Return Card with most simulations
     private Card DecideCardToDiscard()
     {
+        //TODO: Uncomment when testing AISimulationState 
+        /*
         //We only consider which deadwood cards to discard
         int deadwoodsCount = Deadwoods.Count;
 
@@ -104,13 +106,13 @@ public class AIHand : PlayerHand
 
          for (int totalSims = 1; totalSims <= SimulationCount; totalSims++)
          {
-            /*
-             * UCT = Wins/Sims + c*sqrt(Log(total sims of all choices)/Sims))
-             * exploitation component : Wins/Sims
-             * exploration component: sqrt(Log(total sims)/sims))
-             * c: trade-off between exploitation and exploration
-             * CHOOSE ONE WITH LARGEST UCT        
-             */
+            
+             // UCT = Wins/Sims + c*sqrt(Log(total sims of all choices)/Sims))
+             // exploitation component : Wins/Sims
+             // exploration component: sqrt(Log(total sims)/sims))
+             // c: trade-off between exploitation and exploration
+             // CHOOSE ONE WITH LARGEST UCT        
+
             double maxUCT = 0; int maxUCTIndex = 0;
             for (int i = 0; i < deadwoodsCount; i++)
             {
@@ -147,10 +149,13 @@ public class AIHand : PlayerHand
         //TODO: uncomment following when AISimulationState is done
        // return Deadwoods[maxSimCountIndex];
 
+*/
         //TEMPORARY STRATEGY//
-        //The last card in the sorted hand is the highest value deadwood
-        return CardSlotList[10].TopCard();
+        //The last card in Deadwoods the highest valued deadwood
+        return Deadwoods[Deadwoods.Count-1];
     }
+
+
 
     public void InitializeGameState()
     {
