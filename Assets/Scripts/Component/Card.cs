@@ -4,9 +4,9 @@ using System.Collections;
 public class Card : MonoBehaviour
 {
     public CardSlot ParentCardSlot { get; set; }
-
-    public int FaceValue { get; set; } //Face cards:10; Ace:11
-    public Suit CardSuit { get; set; } //Enum SUIT defined in CardDeck.cs
+    public enum Suit { Clubs, Diamonds, Hearts, Spades };
+    public int FaceValue { get; set; } //Face cards:10; Ace:1
+    public Suit CardSuit { get; set; } //Enum SUIT defined in above
     public int Rank { get; set; } //Ace:1; Jack:11; Queen:12; King:13
 
     private float _positionDamp = .2f;
@@ -42,16 +42,14 @@ public class Card : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            //    print("clicking on: " + name + "\n");
-            //    print("ParentCardSlot: " + ParentCardSlot.name + "\n");
 
             //PLAYER DRAW
             if (Round.instance.CurrentTurn == Turn.PlayerDraw)
             {
-                if (ParentCardSlot.name.IndexOf("DrawStackSlot", System.StringComparison.CurrentCulture) != -1 
+                if (ParentCardSlot.name.IndexOf("DrawStackSlot", System.StringComparison.CurrentCulture) != -1
                 || ParentCardSlot.name.IndexOf("DiscardStackSlot", System.StringComparison.CurrentCulture) != -1)
                 {
-                    PlayerHand.instance.DrawCard(this);
+                    PlayerHand.instance.DrawCard(this, true);
                 }
             }
 
@@ -60,7 +58,7 @@ public class Card : MonoBehaviour
             {
                 if (ParentCardSlot.name.IndexOf("PlayerCardSlot", System.StringComparison.CurrentCulture) != -1)
                 {
-                    PlayerHand.instance.DiscardCard(this, false);
+                    PlayerHand.instance.DiscardCard(this, true, false);
                 }
             }
         }
@@ -120,4 +118,3 @@ public class Card : MonoBehaviour
         GetComponent<Renderer>().material.mainTexture = null;
     }
 }
-

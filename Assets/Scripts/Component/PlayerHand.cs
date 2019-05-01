@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class PlayerHand : MonoBehaviour
 {
+    public int MatrixValue;
     public static PlayerHand instance;
     protected int InstanceType; //0: PlayerHand, 1: AIHand
 
@@ -37,6 +38,7 @@ public class PlayerHand : MonoBehaviour
 
     public void Awake()
     {
+        MatrixValue = 0;
         instance = this;
         InstanceType = 0;
         EmptyHand();
@@ -78,12 +80,11 @@ public class PlayerHand : MonoBehaviour
                 AddToSuitList(card);
             }
         }
-
-        ScanHand();
+        ScanHand(true);
     }
 
     //Scan the hand to determine what are deadwoods, runs, sets and other data
-    public void ScanHand()
+    public void ScanHand(bool UI)
     {
         AllMelds = new List<List<Card>>();
         OptimalMelds = new List<List<Card>>();
@@ -100,8 +101,11 @@ public class PlayerHand : MonoBehaviour
 
         CalculateDeadwoods();
 
-        SortHandUI();
-        GameUI.instance.UpdateScoreUI();
+        if (UI)
+        {
+            SortHandUI();
+            GameUI.instance.UpdateScoreUI();
+        }
     }
 
     //Function that scan the hand and put any possible sets
@@ -220,11 +224,11 @@ public class PlayerHand : MonoBehaviour
     }
 
     //From j to i-1
-    private void AddRunsToAllMelds(List<Card> suitList, int j, int i) 
+    private void AddRunsToAllMelds(List<Card> suitList, int j, int i)
     {
         List<List<Card>> allNewRuns = new List<List<Card>>();
         List<Card> run = new List<Card>();
-        
+
         for (int index = j; index < j + 3; index++)
         {
             run.Add(suitList[index]);
@@ -266,7 +270,7 @@ public class PlayerHand : MonoBehaviour
     }
 
     //Function to use the melds in AllMelds and decide the optimal subset of AllMelds:
-    //meaning no overlap in cards (each card appear only once) 
+    //meaning no overlap in cards (each card appear only once)
     //and have the highest total face value (consequentially lowest total deadwood value)
     private void DecideOptimalMelds()
     {
@@ -467,28 +471,40 @@ public class PlayerHand : MonoBehaviour
         }
     }
 
-    public void DrawCard(Card newCard)
+    public void DrawCard(Card newCard, bool UI)
     {
-        //Add to Cards list then call Scan hand to put the new card
-        //in appropriate set, run or deadwood
+        //If player draws from discard pile, then we can record this info in the matrix
+        if (MatrixValue == 0 && newCard.ParentCardSlot.name.IndexOf("DiscardStackSlot", System.StringComparison.CurrentCulture) != -1)
+            AIHand.instance.PutCardInGameState(AIHand.instance.KnownGameState, newCard, MatrixValue);
+        else if (MatrixValue == 1)
+            AIHand.instance.PutCardInGameState(AIHand.instance.KnownGameState, newCard, MatrixValue);
+
         CardsInHand.Add(newCard);
         AddToSuitList(newCard);
 
-        ScanHand();
-
-        if (Round.instance.CurrentTurn == Turn.PlayerDraw)
+        ScanHand(UI);
+        AIHand.instance.printGameState();
+        if (UI && Round.instance.CurrentTurn == Turn.PlayerDraw)
         {
             Round.instance.UpdateTurn(Turn.PlayerDiscard);
-            CheckLegalEndRoundMove();
+            int legalEndRoundMove = CheckLegalEndRoundMove();
+            if (legalEndRoundMove != -1)
+            {
+                GameUI.instance.DisplayEndRoundMoveButton(legalEndRoundMove);
+            }
         }
     }
 
     //bool endRound: pass in true only if this is the last discard automatic
     //that happens after calling gin or knock
-    public void DiscardCard(Card card, bool endRound)
+    public void DiscardCard(Card card, bool UI, bool endRound)
     {
-        Round.instance.DiscardPile.AddCard(card);
+        if (UI)
+        {
+            Round.instance.DiscardPile.AddCard(card);
+        }
 
+        AIHand.instance.PutCardInGameState(AIHand.instance.KnownGameState, card, 2);
         CardsInHand.Remove(card);
         Deadwoods.Remove(card);
         SpadesList.Remove(card);
@@ -504,14 +520,14 @@ public class PlayerHand : MonoBehaviour
             l.Remove(card);
         }
 
-        ScanHand();
+        ScanHand(UI);
 
-        if (!endRound)
+        if (UI && !endRound)
         {
             if (Round.instance.CurrentTurn == Turn.PlayerDiscard)
             {
                 GameUI.instance.DisableEndRoundMoveButton();
-                Round.instance.UpdateTurn(Turn.AI);
+                Round.instance.UpdateTurn(Turn.AIDraw);
                 AIHand.instance.AIExecuteTurn();
             }
             else
@@ -525,19 +541,19 @@ public class PlayerHand : MonoBehaviour
     {
         switch (card.CardSuit)
         {
-            case Suit.Clubs:
+            case Card.Suit.Clubs:
                 ClubsList.Add(card);
                 SortCardList(ClubsList);
                 break;
-            case Suit.Diamonds:
+            case Card.Suit.Diamonds:
                 DiamondsList.Add(card);
                 SortCardList(DiamondsList);
                 break;
-            case Suit.Hearts:
+            case Card.Suit.Hearts:
                 HeartsList.Add(card);
                 SortCardList(HeartsList);
                 break;
-            case Suit.Spades:
+            case Card.Suit.Spades:
                 SpadesList.Add(card);
                 SortCardList(SpadesList);
                 break;
@@ -549,25 +565,33 @@ public class PlayerHand : MonoBehaviour
     //0: knock
     //1: gin
     //2: big gin
-    private void CheckLegalEndRoundMove()
+    //-1: no legal move
+    protected int CheckLegalEndRoundMove()
     {
         //BIG GIN legal
         if (Deadwoods.Count == 0)
         {
-            GameUI.instance.DisplayEndRoundMoveButton(2);
+            return 2;
         }
 
         //GIN leagl
         else if (Deadwoods.Count == 1)
         {
-            GameUI.instance.DisplayEndRoundMoveButton(1);
+            return 1;
         }
 
         //KNOCK legal
         else if ((DeadwoodPoints - Deadwoods[Deadwoods.Count-1].FaceValue) < 10)
         {
-            GameUI.instance.DisplayEndRoundMoveButton(0);
+            return 0;
         }
+
+        return -1;
+    }
+
+    private void DisplayLegalEndRoundButton()
+    {
+
     }
 
     //TODO FOR ALL 3: remove "print" after testing purposes have been completed
@@ -576,7 +600,7 @@ public class PlayerHand : MonoBehaviour
     //Consider a post-discard "turn" so players can gin after discarding themselves (not a big deal rn)
     public void Gin()
     {
-        DiscardCard(Deadwoods[0], true);
+        DiscardCard(Deadwoods[0], true, true);
         Round.instance.CalculateAndUpdateScore(1, InstanceType);
     }
 
@@ -587,7 +611,7 @@ public class PlayerHand : MonoBehaviour
 
     public void Knock()
     {
-        DiscardCard(Deadwoods[Deadwoods.Count - 1], true);
+        DiscardCard(Deadwoods[Deadwoods.Count - 1], true, true);
         Round.instance.CalculateAndUpdateScore(0, InstanceType);
     }
 

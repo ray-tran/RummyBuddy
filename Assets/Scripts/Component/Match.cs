@@ -12,8 +12,9 @@ public class Match : MonoBehaviour
     public int RoundCount { get; set; }
     public int PlayerWinCount { get; set; }
     public int PlayerLossCount { get; set; }
-    public List<List<string>> RoundResult; //e.g. [["player", "23"], ["ai","49"],...] 
+    public List<List<string>> RoundResult; //e.g. [["player", "23"], ["ai","49"],...]
                                            //means player wins first round with 23 points
+    public List<string> UpdateResult;
 
     // Start is called before the first frame update
     void Awake()
@@ -36,7 +37,7 @@ public class Match : MonoBehaviour
 
 
     public void StartRound()
-    { 
+    {
         if (RoundCount != 0)
         {
             StartCoroutine(Dealer.instance.ShuffleCoroutine());//Clean table, shuffle, deal
@@ -86,7 +87,7 @@ public class Match : MonoBehaviour
 
     }
 
-    //public void DisplayRoundResult(string winner, int score, int winType) 
+    //public void DisplayRoundResult(string winner, int score, int winType)
     //{
     //    GameObject roundResults;
 

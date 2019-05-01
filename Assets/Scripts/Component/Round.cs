@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Turn { PlayerDraw, PlayerDiscard, AI };
 
+//Redo Turns based on AIDraw and AIDiscard
+public enum Turn { PlayerDraw, PlayerDiscard, AIDraw, AIDiscard};
+
+//VARIABLES AND CLASS NAMES ARE AMBIGUOUS "AIHand PlayerHand"
 public class Round : MonoBehaviour
 {
     public static Round instance;
@@ -12,6 +15,17 @@ public class Round : MonoBehaviour
     public CardSlot DrawPile;
     private PlayerHand PlayerHand;
     private AIHand AIHand;
+    public string winner;
+    public int winScore;
+
+    //Matrix represents cards and their locations
+    //[4] : Suits. Suit { Clubs, Diamonds, Hearts, Spades };
+    //[13]: Face Value; 0 = Ace, 11 = Jack, 12 = Queen, 13 = King
+    //Values: -1 = unknown, 0 = Player Hand, 1 = AI Hand, 2 = Discard Stack
+    //Will also be used for AI simulations
+    //KnownGameState
+    public int[,] _CurrentGameState = new int[4, 13];
+
 
     void Awake()
     {
@@ -39,6 +53,16 @@ public class Round : MonoBehaviour
 
         PlayerHand.instance.InitializeHand();
         AIHand.instance.InitializeHand();
+        AIHand.instance.InitializeGameState();
+
+        if (winner == "AI")
+        {
+            UpdateTurn(Turn.PlayerDraw);
+        }
+        else if (winner == "Player")
+        {
+            UpdateTurn(Turn.AIDraw);
+        }
     }
 
     public void UpdateTurn(Turn newTurn)

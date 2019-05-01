@@ -38,3 +38,4 @@ sysinfo.txt
 # MacOS auto-generated file
 .DS_Store
 .vscode/settings.json
+*.icloud
