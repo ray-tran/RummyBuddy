@@ -37,6 +37,9 @@ public class AIHand : PlayerHand
         CardSlotList.Add(CardSlot8);
         CardSlotList.Add(CardSlot9);
         CardSlotList.Add(CardSlot10);
+        InitializeCardSlots();
+        //Debug.Log("Check y (AI):" + CardSlotList[4].TargetTransform.position.y);
+
     }
 
     //TODO: Update CurrentGameState[,]
@@ -50,7 +53,7 @@ public class AIHand : PlayerHand
     {
         Card topDiscardCard = Round.instance.DiscardPile.TopCard();
 
-        printGameState();
+        //printGameState();
 
         //If drawing top discard card would result in 3 cards or more in a run
         //Or if drawing top discard card would result in 3 cards or more of same rank
@@ -168,7 +171,7 @@ public class AIHand : PlayerHand
         }
 
         PutCardInGameState(KnownGameState, Round.instance.DiscardPile.TopCard(), 2);
-        printGameState();
+        //printGameState();
     }
 
     public void PutCardInGameState(int[,] gameState, Card card, int val)

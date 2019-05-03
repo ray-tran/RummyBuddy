@@ -25,7 +25,8 @@ public class Dealer : MonoBehaviour
 	{
         instance = this;
 		_cardDeck.InstanatiateDeck("cards");
-		StartCoroutine(CardDropShuffleDeal(0, _cardDeck.CardList.Count, _centerStackCardSlot));
+
+        StartCoroutine(CardDropShuffleDeal(0, _cardDeck.CardList.Count, _centerStackCardSlot));
 	}
     
     //Move all cards in a slot to another slot
@@ -42,13 +43,22 @@ public class Dealer : MonoBehaviour
     //Drops, Shuffles and Deals the cards.
 	private IEnumerator CardDropShuffleDeal(int start, int end, CardSlot cardSlot) 
 	{
-		DealInProgress++;
-		for (int i = start; i < end; ++i)
+
+        DealInProgress++;
+
+        for (int i = start; i < end; ++i)
 		{
 			cardSlot.AddCard(_cardDeck.CardList[i]);
-			yield return new WaitForSeconds(CardStackDelay);
+            
+
+            yield return new WaitForSeconds(CardStackDelay);
 		}
         DealInProgress--;
+
+        PlayerHand.instance.CardSlotList[9].TargetTransform.position = new Vector3(PlayerHand.instance.CardSlotList[9].TargetTransform.position.x, 0.098f, PlayerHand.instance.CardSlotList[9].TargetTransform.position.z);
+        AIHand.instance.CardSlotList[4].TargetTransform.position = new Vector3(AIHand.instance.CardSlotList[4].TargetTransform.position.x, 0.035f, AIHand.instance.CardSlotList[4].TargetTransform.position.z);
+
+
         StartCoroutine(ShuffleCoroutine());        
 	}
 
@@ -98,15 +108,12 @@ public class Dealer : MonoBehaviour
 			yield return new WaitForSeconds(CardStackDelay);
 		}
         yield return new WaitForSeconds(.3f);
-        StartCoroutine(DealCards());
 
-        DealInProgress--;
+        StartCoroutine(DealCards());
     }
 
     public IEnumerator DealCards()
     {
-        DealInProgress++;
-
         System.Random random = new System.Random();
 
         for (int i = 0; i < 10; i++)

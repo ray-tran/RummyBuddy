@@ -53,6 +53,8 @@ public class PlayerHand : MonoBehaviour
         CardSlotList.Add(CardSlot8);
         CardSlotList.Add(CardSlot9);
         CardSlotList.Add(CardSlot10);
+        InitializeCardSlots();
+        //Debug.Log("Check y :" + CardSlotList[9].TargetTransform.position.y);
     }
 
     public void EmptyHand()
@@ -452,6 +454,7 @@ public class PlayerHand : MonoBehaviour
     private void SortHandUI()
     {
         int index = 0;
+        FitCardSlots();
 
         //Melds on the left
         foreach (List<Card> meld in OptimalMelds)
@@ -469,6 +472,57 @@ public class PlayerHand : MonoBehaviour
             CardSlotList[index].AddCard(c);
             index++;
         }
+
+        if (InstanceType == 0)
+        {
+            //for (int i = 0; i <= CardsInHand.Count - 1; i++)
+                //Debug.Log("Card at " + i + ": " + CardSlotList[i].TopCard().name);
+
+          
+
+
+        }
+
+    }
+
+    protected void InitializeCardSlots()
+    {
+        float y = CardSlotList[0].TargetTransform.position.y;
+        float gap;
+        if (InstanceType == 0)
+            gap = .005f;
+        else
+            gap = 0.003f;
+        for (int i = 0; i < CardSlotList.Count; i++)
+        {
+            y += gap;
+            CardSlotList[i].TargetTransform.position = new Vector3(CardSlotList[i].TargetTransform.position.x, y, CardSlotList[i].TargetTransform.position.z);
+        }
+
+    }
+
+    private void FitCardSlots()
+    {
+
+        int slotListLen = CardSlotList.Count;
+
+        float leftPoint = CardSlotList[0].transform.position.x;
+        float rightPoint = CardSlotList[slotListLen - 1].transform.position.x;
+
+        float delta = rightPoint - leftPoint;
+
+        int lastIndex = CardsInHand.Count - 1;
+
+        int gaps = lastIndex;
+
+        float gapFromOneItemToTheNextOne = delta / gaps;
+
+        for (int i = 0; i <= lastIndex; i++)
+        {
+
+            CardSlotList[i].TargetTransform.position = new Vector3(leftPoint + (i * gapFromOneItemToTheNextOne), CardSlotList[i].TargetTransform.position.y, CardSlotList[i].TargetTransform.position.z);
+
+        }
     }
 
     public void DrawCard(Card newCard, bool UI)
@@ -483,6 +537,7 @@ public class PlayerHand : MonoBehaviour
         AddToSuitList(newCard);
 
         ScanHand(UI);
+
         AIHand.instance.printGameState();
         if (UI && Round.instance.CurrentTurn == Turn.PlayerDraw)
         {
@@ -594,10 +649,7 @@ public class PlayerHand : MonoBehaviour
 
     }
 
-    //TODO FOR ALL 3: remove "print" after testing purposes have been completed
 
-    //Only works before card has been discarded,
-    //Consider a post-discard "turn" so players can gin after discarding themselves (not a big deal rn)
     public void Gin()
     {
         DiscardCard(Deadwoods[0], true, true);

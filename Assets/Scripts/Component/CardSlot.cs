@@ -13,14 +13,40 @@ public class CardSlot : MonoBehaviour
 	public float _positionDamp = .2f;
 
 	[Range(0.05f, 0.3f)]
-	public float _rotationDamp = .2f;   
-	
-	private void Awake()
+	public float _rotationDamp = .2f;
+
+    public Transform TargetTransform
+    {
+        get
+        {
+            if (_targetTransform == null)
+            {
+                _targetTransform = new GameObject(this.name + "Target").GetComponent<Transform>();
+                _targetTransform.position = transform.position;
+                _targetTransform.forward = transform.forward;
+            }
+            return _targetTransform;
+        }
+        set
+        {
+            _targetTransform = value;
+        }
+
+    }
+    private Transform _targetTransform;
+
+    private void Awake()
 	{
-		GetComponent<MeshRenderer>().enabled = false;
+        _targetTransform = transform;
+        GetComponent<MeshRenderer>().enabled = false;
 	}
-	
-	public int FaceValue()
+
+    private void Update()
+    {
+        SmoothToTargetPositionRotation();
+    }
+
+    public int FaceValue()
 	{
 		int collectiveFaceValue = 0;
 		for (int i = 0; i < CardList.Count; ++i)
@@ -109,5 +135,27 @@ public class CardSlot : MonoBehaviour
 		card.ParentCardSlot = null;
 		CardList.Remove(card);
 	}
+
+    private void SmoothToTargetPositionRotation()
+    {
+        if (TargetTransform.position != transform.position || TargetTransform.eulerAngles != transform.eulerAngles)
+        {
+            SmoothToPointAndDirection(TargetTransform.position, _positionDamp, TargetTransform.rotation, _rotationDamp);
+        }
+    }
+
+
+    private void SmoothToPointAndDirection(Vector3 point, float moveSmooth, Quaternion rotation, float rotSmooth)
+    {
+        transform.position = Vector3.SmoothDamp(transform.position, point, ref _smoothVelocity, moveSmooth);
+        Quaternion newRotation;
+        newRotation.x = Mathf.SmoothDamp(transform.rotation.x, rotation.x, ref _smoothRotationVelocity.x, rotSmooth);
+        newRotation.y = Mathf.SmoothDamp(transform.rotation.y, rotation.y, ref _smoothRotationVelocity.y, rotSmooth);
+        newRotation.z = Mathf.SmoothDamp(transform.rotation.z, rotation.z, ref _smoothRotationVelocity.z, rotSmooth);
+        newRotation.w = Mathf.SmoothDamp(transform.rotation.w, rotation.w, ref _smoothRotationVelocity.w, rotSmooth);
+        transform.rotation = newRotation;
+    }
+    private Vector3 _smoothVelocity;
+    private Vector4 _smoothRotationVelocity;
 
 }
