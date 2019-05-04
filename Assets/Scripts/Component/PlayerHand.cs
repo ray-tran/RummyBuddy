@@ -461,6 +461,8 @@ public class PlayerHand : MonoBehaviour
         {
             foreach(Card c in meld)
             {
+                if (InstanceType == 0)
+                    c.gameObject.transform.Find("Glow").gameObject.SetActive(true);
                 CardSlotList[index].AddCard(c);
                 index++;
             }
@@ -469,20 +471,10 @@ public class PlayerHand : MonoBehaviour
         //Deadwoods on the right
         foreach(Card c in Deadwoods)
         {
+            c.gameObject.transform.Find("Glow").gameObject.SetActive(false);
             CardSlotList[index].AddCard(c);
             index++;
         }
-
-        if (InstanceType == 0)
-        {
-            //for (int i = 0; i <= CardsInHand.Count - 1; i++)
-                //Debug.Log("Card at " + i + ": " + CardSlotList[i].TopCard().name);
-
-          
-
-
-        }
-
     }
 
     protected void InitializeCardSlots()
@@ -538,7 +530,6 @@ public class PlayerHand : MonoBehaviour
 
         ScanHand(UI);
 
-        AIHand.instance.printGameState();
         if (UI && Round.instance.CurrentTurn == Turn.PlayerDraw)
         {
             Round.instance.UpdateTurn(Turn.PlayerDiscard);
@@ -557,6 +548,7 @@ public class PlayerHand : MonoBehaviour
         if (UI)
         {
             Round.instance.DiscardPile.AddCard(card);
+            card.gameObject.transform.Find("Glow").gameObject.SetActive(false);
         }
 
         AIHand.instance.PutCardInGameState(AIHand.instance.KnownGameState, card, 2);
