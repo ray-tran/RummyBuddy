@@ -97,16 +97,16 @@ public class AIHand : PlayerHand
     private Card DecideCardToDiscard()
     {
         //TODO: Uncomment when testing AISimulationState
-        /*
+        
         //We only consider which deadwood cards to discard
         int deadwoodsCount = Deadwoods.Count;
-
+        /*
         // 2D array to store simulations result
         // There are deadwoodsCount arrays of 2 numbers
         // Each array tells if discarding this card will likely result in a win or not
         // Each array of number represents: wins (index 0) over sims (index 1)
         int[,] simsResult = new int[deadwoodsCount, 2];
-        FillMatrix(simsResult, 0);
+        FillMatrix(simsResult, 1);
 
          for (int totalSims = 1; totalSims <= SimulationCount; totalSims++)
          {
@@ -119,7 +119,7 @@ public class AIHand : PlayerHand
 
             double maxUCT = 0; int maxUCTIndex = 0;
             for (int i = 0; i < deadwoodsCount; i++)
-            {
+            {               
                 int wins = simsResult[i,0]; int sims = simsResult[i,1];
                 double UCT = (wins / sims) + (c * Mathf.Sqrt(Mathf.Log(totalSims) / sims));
                 if (UCT > maxUCT)
@@ -150,10 +150,11 @@ public class AIHand : PlayerHand
             }
         }
 
+        */
         //TODO: uncomment following when AISimulationState is done
-       // return Deadwoods[maxSimCountIndex];
+        //return Deadwoods[maxSimCountIndex];
 
-*/
+
         //TEMPORARY STRATEGY//
         //The last card in Deadwoods the highest valued deadwood
         return Deadwoods[Deadwoods.Count-1];

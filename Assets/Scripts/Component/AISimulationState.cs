@@ -9,6 +9,7 @@ using UnityEngine;
 //Honestly it might not matter tho, it will generate per run sooooo
 public class AISimulationState: Round
 {
+    private bool AIWin = false;
     //Same as AI Hand KnownCardSet
     private int[,] GameState = new int[4, 13];
     //Used for evaluated hands in both Calculate functions
@@ -22,6 +23,7 @@ public class AISimulationState: Round
     private Card ChosenCard;
     private PlayerHand PlayerHand;
     private AIHand AIHand;
+    
 
     //On construction, GameStateSet will be generated
     //
@@ -51,10 +53,12 @@ public class AISimulationState: Round
 
         //Fill in for stock pile
         //Might move to AIHand?
+        /*
         for (int i = this.DiscardPile.CardList.Count; i > 0; i--)
         {
             GameState[(int) this.DiscardPile.CardList[i].CardSuit, this.DiscardPile.CardList[i].Rank - 1] = (int) CardLocations.DiscardPile;
-        }
+        }\
+        */
 
         //Find all known cards in playerHand, then fill them
         for (int i = 0; i < 4; i++)
@@ -65,7 +69,8 @@ public class AISimulationState: Round
                 {
                     case (int) CardLocations.PlayerHand:
                         PlayerHandKnownSize++;
-                        PlayerHand.CardsInHand.Add(this.GenerateCard(i,j));
+                        Card newCard = this.GenerateCard(i,j);
+                        PlayerHand.DrawCard(newCard,false);
                         UnknownDeckSize--;
                         break;
                     case -1:
@@ -92,18 +97,19 @@ public class AISimulationState: Round
 
         //Fill Stock Pile based on deckSize and unfilled cards
         //Create Stack from pile
-        //Generate card based on spot, put in DrawPile
         //Add to Gamestate as CardLocation.StockStack
+        //Generate card and add to DrawPile
         //
-        //POTENTIALLY create new data stack to limit object generation
         while (UnknownSpots.Count > 0)
         {
             RandomSpot = rand.Next(0, UnknownSpots.Count - 1);
             GameState[UnknownSpots[RandomSpot].Item1,UnknownSpots[RandomSpot].Item2] = (int) CardLocations.DrawPile;
             UnknownSpots.RemoveAt(RandomSpot);
+
             Card DrawCard = GenerateCard(UnknownSpots[RandomSpot].Item1,UnknownSpots[RandomSpot].Item2);
             this.DrawPile.AddCard(DrawCard);
         }
+
 
     }
 
@@ -113,7 +119,8 @@ public class AISimulationState: Round
     //Currently does not account for knocks or gins, just til cards run out of drawpile
     private void SimulateTurnMove()
     {
-        while (DrawPile.CardList.Count > 0)
+        bool isSimulating = true;
+        while (isSimulating)
         {
             if (CurrentTurn.Equals(Turn.PlayerDiscard)||CurrentTurn.Equals(Turn.AIDiscard))
             {
@@ -122,7 +129,9 @@ public class AISimulationState: Round
             else
             {
                 CalculateDiscardCard();
+
             }
+            isSimulating = CalculateIsSim();
         }
     }
 
@@ -142,9 +151,7 @@ public class AISimulationState: Round
                 {
                     (int,int) GameStateCard = CardToStateLocation(DrawPile.TopCard());
                     GameState[GameStateCard.Item1,GameStateCard.Item2] = (int) CardLocations.PlayerHand;
-                    this.PlayerHand.DrawCard(DrawPile.TopCard(), false);
-                    //this.PlayerHand.CardsInHand.Add(this.DrawPile.TopCard());
-                    this.DrawPile.CardList.Remove(this.DrawPile.TopCard());
+                    this.PlayerHand.DrawCard(this.DrawPile.TopCard(), false);
 
                 }
                 else
@@ -152,8 +159,6 @@ public class AISimulationState: Round
                     (int,int) GameStateCard = CardToStateLocation(DiscardPile.TopCard());
                     GameState[GameStateCard.Item1,GameStateCard.Item2] = (int) CardLocations.PlayerHand;
                     this.PlayerHand.DrawCard(this.DiscardPile.TopCard(), false);
-                    //PlayerHand.CardsInHand.Add(this.DiscardPile.TopCard());
-                    this.DiscardPile.CardList.Remove(this.DiscardPile.TopCard());
                 }
                 break;
             case Turn.AIDraw:
@@ -163,18 +168,12 @@ public class AISimulationState: Round
                     (int,int) GameStateCard = CardToStateLocation(DrawPile.TopCard());
                     GameState[GameStateCard.Item1,GameStateCard.Item2] = (int) CardLocations.AIHand;
                     this.AIHand.DrawCard(this.DrawPile.TopCard(), false);
-                    //AIHand.CardsInHand.Add(DrawPile.TopCard());
-                    this.DrawPile.CardList.Remove(this.DrawPile.TopCard());
-
                 }
                 else
                 {
                     (int,int) GameStateCard = CardToStateLocation(DiscardPile.TopCard());
                     GameState[GameStateCard.Item1,GameStateCard.Item2] = (int) CardLocations.AIHand;
                     this.AIHand.DrawCard(this.DiscardPile.TopCard(), false);
-                    //this.AIHand.CardsInHand.Add(this.DiscardPile.TopCard());
-                    this.DiscardPile.CardList.Remove(this.DiscardPile.TopCard());
-
                 }
                 break;
         }
@@ -184,7 +183,7 @@ public class AISimulationState: Round
 
     //Determines which card to discard, based on whos turn, their hand, and calculated and "weighted" cards
     //Evaluates hand, makes best intentioned guess
-
+    //
     //right now chooses random card, updates GameState
     private void CalculateDiscardCard()
     {
@@ -204,31 +203,35 @@ public class AISimulationState: Round
         {
             for (int j = 0; j < 13; j++)
             {
-                Spots.Add((i,j));
+                if (GameState[i,j] == (int) currentHand)
+                {
+                    Spots.Add((i,j));
+                }
             }
         }
 
         int RandomSpot = rand.Next(0, Spots.Count - 1);
-        if (GameState[Spots[RandomSpot].Item1,Spots[RandomSpot].Item2] == (int) currentHand)
-        {        
-            Card NewCard = GenerateCard(Spots[RandomSpot].Item1,Spots[RandomSpot].Item2);
+
+        //might need edits, potention for lotta garbage (which c# cleans out anyway)
+        Card NewCard = GenerateCard(Spots[RandomSpot].Item1,Spots[RandomSpot].Item2);
             
-            if (currentHand == CardLocations.PlayerHand)
-            {
-                this.PlayerHand.CardsInHand.Remove(NewCard);
-            }
-            else 
-            {
-               this.AIHand.CardsInHand.Remove(NewCard);
-            }
-            this.DiscardPile.AddCard(NewCard);
-            //Destroy(NewCard);
+        if (currentHand == CardLocations.PlayerHand)
+        {
+            this.PlayerHand.DiscardCard(NewCard, false, false);
         }
+        else 
+        {
+            this.AIHand.DiscardCard(NewCard, false, false);
+        }
+
+        GameState[Spots[RandomSpot].Item1,Spots[RandomSpot].Item2] = (int) CardLocations.DiscardPile;
     }
 
-    private Card GenerateCard(int suit, int face)
+    private Card  GenerateCard(int suit, int face)
     {
-        Card ReturnCard = new Card();
+        GameObject emptyCardObject = new GameObject();
+        emptyCardObject.AddComponent<Card>();
+        Card ReturnCard = emptyCardObject.GetComponent<Card>();
         switch (suit)
             {
                 case (int) Card.Suit.Clubs:
@@ -314,25 +317,73 @@ public class AISimulationState: Round
         cardLocation.Item2 = (int) card.FaceValue - 1;
         return cardLocation;
     }
+    
+
+    private bool CalculateIsSim()
+    {
+        this.AIHand.ScanHand(false);
+        this.PlayerHand.ScanHand(false);
+
+        if (CurrentTurn == Turn.AIDiscard || CurrentTurn ==  Turn.AIDraw)
+        {
+            if (AIHand.DeadwoodPoints < 10)
+            {
+                if (AIHand.DeadwoodPoints == 0 || AIHand.Deadwoods.Count == 1)
+                {
+                    AIWin = true;
+                    return false;
+                }
+
+                //0 knocks
+                //1 doesn't
+                if (rand.Next(0,1) == 0)
+                {
+                    if (AIHand.DeadwoodPoints < PlayerHand.DeadwoodPoints)
+                    {
+                        AIWin = true;
+                        return false;
+                    }
+                    else 
+                    {
+                        return false;
+                    }
+                }
+            
+            }
+        }
+        else if (PlayerHand.DeadwoodPoints < 10)
+        {
+            if (PlayerHand.DeadwoodPoints == 0 || PlayerHand.Deadwoods.Count == 1)
+                {
+                    return false;
+                }
+
+                //0 knocks
+                //1 doesn't
+                if (rand.Next(0,1) == 0)
+                {
+                    if (AIHand.DeadwoodPoints < PlayerHand.DeadwoodPoints)
+                    {
+                        AIWin = true;
+                        return false;
+                    }
+                    else 
+                    {
+                        return false;
+                    }
+                }
+        }
+        return true;
+    }
 
     //Starts simulation, returns if simulation got to "win" or "advantage" state
     //runs SimulateTurnMove until reaches game state
     public bool GetSimulation()
     {
-        bool AIWin = false;
         this.AIHand.DiscardCard(ChosenCard, false, false);
-        this.DiscardPile.CardList.Remove(ChosenCard);
         CurrentTurn = Turn.PlayerDraw;
 
         SimulateTurnMove();
-
-        this.AIHand.ScanHand(false);
-        this.PlayerHand.ScanHand(false);
-
-        if (AIHand.DeadwoodPoints < PlayerHand.DeadwoodPoints)
-        {
-            AIWin = true;
-        }
 
         return AIWin;
     }

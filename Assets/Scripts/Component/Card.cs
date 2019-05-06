@@ -9,6 +9,8 @@ public class Card : MonoBehaviour
     public Suit CardSuit { get; set; } //Enum SUIT defined in above
     public int Rank { get; set; } //Ace:1; Jack:11; Queen:12; King:13
 
+    public new static Card instance;
+
     private float _positionDamp = .2f;
     private float _rotationDamp = .2f;
 
@@ -18,6 +20,11 @@ public class Card : MonoBehaviour
     //dir path to AssetBundles/Cards
     public string SourceAssetBundlePath { get; set; }
 
+    //Empty constructor
+    public Card ()
+    {
+
+    }
     public Transform TargetTransform
     {
         get
