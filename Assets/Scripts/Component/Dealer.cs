@@ -55,8 +55,8 @@ public class Dealer : MonoBehaviour
 		}
         DealInProgress--;
 
-        PlayerHand.instance.CardSlotList[9].TargetTransform.position = new Vector3(PlayerHand.instance.CardSlotList[9].TargetTransform.position.x, 0.098f, PlayerHand.instance.CardSlotList[9].TargetTransform.position.z);
-        AIHand.instance.CardSlotList[4].TargetTransform.position = new Vector3(AIHand.instance.CardSlotList[4].TargetTransform.position.x, 0.035f, AIHand.instance.CardSlotList[4].TargetTransform.position.z);
+        GameObject.Find("PlayerHand").GetComponent<PlayerHand>().CardSlotList[9].TargetTransform.position = new Vector3(GameObject.Find("PlayerHand").GetComponent<PlayerHand>().CardSlotList[9].TargetTransform.position.x, 0.098f, GameObject.Find("PlayerHand").GetComponent<PlayerHand>().CardSlotList[9].TargetTransform.position.z);
+        GameObject.Find("AIHand").GetComponent<AIHand>().CardSlotList[4].TargetTransform.position = new Vector3(GameObject.Find("AIHand").GetComponent<AIHand>().CardSlotList[4].TargetTransform.position.x, 0.035f, GameObject.Find("AIHand").GetComponent<AIHand>().CardSlotList[4].TargetTransform.position.z);
 
 
         StartCoroutine(ShuffleCoroutine());        
@@ -68,12 +68,12 @@ public class Dealer : MonoBehaviour
     public IEnumerator ShuffleCoroutine()
 	{
         DealInProgress++;
-        foreach (CardSlot slot in AIHand.instance.CardSlotList)
+        foreach (CardSlot slot in GameObject.Find("AIHand").GetComponent<AIHand>().CardSlotList)
         {
             MoveCardSlotToCardSlot(slot, _centerStackCardSlot);
         }
 
-        foreach (CardSlot slot in PlayerHand.instance.CardSlotList)
+        foreach (CardSlot slot in GameObject.Find("PlayerHand").GetComponent<PlayerHand>().CardSlotList)
         {
             MoveCardSlotToCardSlot(slot, _centerStackCardSlot);
         }
@@ -120,11 +120,11 @@ public class Dealer : MonoBehaviour
         {
             int randomIndex = random.Next(0, _centerStackCardSlot.GetSize());
             _centerStackCardSlot.AddCard(_centerStackCardSlot.GetCard(randomIndex));
-            PlayerHand.instance.CardSlotList[i].AddCard(_centerStackCardSlot.TopCard());
+            GameObject.Find("PlayerHand").GetComponent<PlayerHand>().CardSlotList[i].AddCard(_centerStackCardSlot.TopCard());
             yield return new WaitForSeconds(.05f);
             randomIndex = random.Next(0, _centerStackCardSlot.GetSize());
             _centerStackCardSlot.AddCard(_centerStackCardSlot.GetCard(randomIndex));
-            AIHand.instance.CardSlotList[i].AddCard(_centerStackCardSlot.TopCard());
+            GameObject.Find("AIHand").GetComponent<AIHand>().CardSlotList[i].AddCard(_centerStackCardSlot.TopCard());
             yield return new WaitForSeconds(.05f);
         }
 

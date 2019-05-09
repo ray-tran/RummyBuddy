@@ -13,8 +13,8 @@ public class Round : MonoBehaviour
     public Turn CurrentTurn;
     public CardSlot DiscardPile;
     public CardSlot DrawPile;
-    private PlayerHand PlayerHand;
-    private AIHand AIHand;
+    protected PlayerHand PlayerHand;
+    protected AIHand AIHand;
     public string winner;
     public int winScore;
 
@@ -27,11 +27,11 @@ public class Round : MonoBehaviour
     public int[,] _CurrentGameState = new int[4, 13];
 
 
-    void Awake()
+    public void Awake()
     {
         instance = this;
-        PlayerHand = PlayerHand.instance;
-        AIHand = AIHand.instance;
+        PlayerHand = GameObject.Find("PlayerHand").GetComponent<PlayerHand>();
+        AIHand = GameObject.Find("AIHand").GetComponent<AIHand>();
     }
 
     public void InitializeRound()
@@ -51,9 +51,9 @@ public class Round : MonoBehaviour
 
         UpdateTurn(Turn.PlayerDraw);
 
-        PlayerHand.instance.InitializeHand();
-        AIHand.instance.InitializeHand();
-        AIHand.instance.InitializeGameState();
+        GameObject.Find("PlayerHand").GetComponent<PlayerHand>().InitializeHand();
+        GameObject.Find("AIHand").GetComponent<AIHand>().InitializeHand();
+        GameObject.Find("AIHand").GetComponent<AIHand>().InitializeGameState();
 
         if (winner == "AI")
         {
@@ -82,8 +82,8 @@ public class Round : MonoBehaviour
     //1: AIHand
     public void CalculateAndUpdateScore(int callType, int InstanceType)
     {
-        int playerDeadwoodPoints = PlayerHand.instance.DeadwoodPoints;
-        int AIDeadwoodPoints = AIHand.instance.DeadwoodPoints;
+        int playerDeadwoodPoints = GameObject.Find("PlayerHand").GetComponent<PlayerHand>().DeadwoodPoints;
+        int AIDeadwoodPoints = GameObject.Find("AIHand").GetComponent<AIHand>().DeadwoodPoints;
         string winner;
         int winScore;
 

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class PlayerHand : MonoBehaviour
 {
+    public bool silent = false;
     public int MatrixValue;
     public static PlayerHand instance;
     protected int InstanceType; //0: PlayerHand, 1: AIHand
@@ -53,7 +54,10 @@ public class PlayerHand : MonoBehaviour
         CardSlotList.Add(CardSlot8);
         CardSlotList.Add(CardSlot9);
         CardSlotList.Add(CardSlot10);
-        InitializeCardSlots();
+        if (!silent)
+        {
+            InitializeCardSlots();
+        }
         //Debug.Log("Check y :" + CardSlotList[9].TargetTransform.position.y);
     }
 
@@ -497,7 +501,6 @@ public class PlayerHand : MonoBehaviour
     {
 
         int slotListLen = CardSlotList.Count;
-
         float leftPoint = CardSlotList[0].transform.position.x;
         float rightPoint = CardSlotList[slotListLen - 1].transform.position.x;
 
@@ -519,11 +522,14 @@ public class PlayerHand : MonoBehaviour
 
     public void DrawCard(Card newCard, bool UI)
     {
-        //If player draws from discard pile, then we can record this info in the matrix
-        if (MatrixValue == 0 && newCard.ParentCardSlot.name.IndexOf("DiscardStackSlot", System.StringComparison.CurrentCulture) != -1)
-            AIHand.instance.PutCardInGameState(AIHand.instance.KnownGameState, newCard, MatrixValue);
-        else if (MatrixValue == 1)
-            AIHand.instance.PutCardInGameState(AIHand.instance.KnownGameState, newCard, MatrixValue);
+        if (!silent)
+        {
+            //If player draws from discard pile, then we can record this info in the matrix
+            if (MatrixValue == 0 && newCard.ParentCardSlot.name.IndexOf("DiscardStackSlot", System.StringComparison.CurrentCulture) != -1)
+                GameObject.Find("AIHand").GetComponent<AIHand>().PutCardInGameState(GameObject.Find("AIHand").GetComponent<AIHand>().KnownGameState, newCard, MatrixValue);
+            else if (MatrixValue == 1)
+                GameObject.Find("AIHand").GetComponent<AIHand>().PutCardInGameState(GameObject.Find("AIHand").GetComponent<AIHand>().KnownGameState, newCard, MatrixValue);
+        }
 
         CardsInHand.Add(newCard);
         AddToSuitList(newCard);
@@ -551,7 +557,8 @@ public class PlayerHand : MonoBehaviour
             card.gameObject.transform.Find("Glow").gameObject.SetActive(false);
         }
 
-        AIHand.instance.PutCardInGameState(AIHand.instance.KnownGameState, card, 2);
+        if (!silent)
+            GameObject.Find("AIHand").GetComponent<AIHand>().PutCardInGameState(GameObject.Find("AIHand").GetComponent<AIHand>().KnownGameState, card, 2);
         CardsInHand.Remove(card);
         Deadwoods.Remove(card);
         SpadesList.Remove(card);
@@ -575,7 +582,9 @@ public class PlayerHand : MonoBehaviour
             {
                 GameUI.instance.DisableEndRoundMoveButton();
                 Round.instance.UpdateTurn(Turn.AIDraw);
-                AIHand.instance.AIExecuteTurn();
+                GameObject.Find("AIHand").GetComponent<AIHand>().AIExecuteTurn();
+
+                //AIHand.instance.AIExecuteTurn();
             }
             else
             {
@@ -613,7 +622,7 @@ public class PlayerHand : MonoBehaviour
     //1: gin
     //2: big gin
     //-1: no legal move
-    protected int CheckLegalEndRoundMove()
+    public int CheckLegalEndRoundMove()
     {
         //BIG GIN legal
         if (Deadwoods.Count == 0)

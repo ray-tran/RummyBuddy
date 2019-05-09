@@ -74,19 +74,19 @@ public class GameUI : MonoBehaviour
     //Called in Player.ScanHand() and Round.UpdateTurn()
     public void UpdateScoreUI()
     {
-        currentDeadwoodPointsText.text = "Points: " + PlayerHand.instance.DeadwoodPoints;
+        currentDeadwoodPointsText.text = "Points: " + GameObject.Find("PlayerHand").GetComponent<PlayerHand>().DeadwoodPoints;
     }
     public void GinUI()
     {
-        PlayerHand.instance.Gin();
+        GameObject.Find("PlayerHand").GetComponent<PlayerHand>().Gin();
     }
     public void BigGinUI()
     {
-        PlayerHand.instance.BigGin();
+        GameObject.Find("PlayerHand").GetComponent<PlayerHand>().BigGin();
     }
     public void KnockUI()
     {
-        PlayerHand.instance.Knock();
+        GameObject.Find("PlayerHand").GetComponent<PlayerHand>().Knock();
     }
 	public void ContinueUI()
     {
@@ -134,8 +134,8 @@ public class GameUI : MonoBehaviour
 
     public void DisplayRoundResult(string winner, int score, int winType, bool endMatch)
     {
-        PlayerRoundDWPointsText.text = PlayerHand.instance.DeadwoodPoints.ToString();
-        AIRoundDWPointsText.text = AIHand.instance.DeadwoodPoints.ToString();
+        PlayerRoundDWPointsText.text = GameObject.Find("PlayerHand").GetComponent<PlayerHand>().DeadwoodPoints.ToString();
+        AIRoundDWPointsText.text = GameObject.Find("AIHand").GetComponent<AIHand>().DeadwoodPoints.ToString();
         string winTypeText = "";
         switch(winType)
         {
