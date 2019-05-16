@@ -38,6 +38,7 @@ public class Card : MonoBehaviour
     {
         if (!Silent)
             SmoothToTargetPositionRotation();
+
     }
 
     private void OnMouseOver()

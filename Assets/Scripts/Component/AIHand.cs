@@ -96,7 +96,7 @@ public class AIHand : PlayerHand
     private Card DecideCardToDiscard()
     {
         //TODO: Uncomment when testing AISimulationState
-        
+        /*
         //We only consider which deadwood cards to discard
         int deadwoodsCount = Deadwoods.Count;
 
@@ -219,10 +219,10 @@ public class AIHand : PlayerHand
         //TODO: uncomment following when AISimulationState is done
         return Deadwoods[optimalIndex];
 
-
+    */
         //TEMPORARY STRATEGY//
         //The last card in Deadwoods the highest valued deadwood
-        //return Deadwoods[Deadwoods.Count-1];
+        return Deadwoods[Deadwoods.Count-1];
     }
 
 
