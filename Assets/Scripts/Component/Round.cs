@@ -68,8 +68,7 @@ public class Round : MonoBehaviour
     public void UpdateTurn(Turn newTurn)
     {
         CurrentTurn = newTurn;
-        GameUI.instance.currentTurnText.text = "Current turn: " + newTurn.ToString();
-        GameUI.instance.UpdateScoreUI();
+        GameUI.instance.UpdateDWUI();
     }
 
     //callType:

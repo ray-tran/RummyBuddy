@@ -75,6 +75,11 @@ public class Dealer : MonoBehaviour
 
         foreach (CardSlot slot in GameObject.Find("PlayerHand").GetComponent<PlayerHand>().CardSlotList)
         {
+            //Disable glows
+            if(slot.GetSize() > 0)
+            {
+                slot.TopCard().gameObject.transform.Find("Glow").gameObject.SetActive(false);
+            }
             MoveCardSlotToCardSlot(slot, _centerStackCardSlot);
         }
 

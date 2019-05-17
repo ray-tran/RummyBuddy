@@ -539,7 +539,6 @@ public class AISimulationState : Round
                 Destroy(g);
         }
 
-
         return AIWin;
     }
 }

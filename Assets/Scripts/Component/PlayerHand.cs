@@ -110,7 +110,7 @@ public class PlayerHand : MonoBehaviour
         if (UI)
         {
             SortHandUI();
-            GameUI.instance.UpdateScoreUI();
+            GameUI.instance.UpdateDWUI();
         }
     }
 

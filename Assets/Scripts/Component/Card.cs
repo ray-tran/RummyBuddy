@@ -53,7 +53,6 @@ public class Card : MonoBehaviour
                 || ParentCardSlot.name.IndexOf("DiscardStackSlot", System.StringComparison.CurrentCulture) != -1)
                 {
                     GameObject.Find("PlayerHand").GetComponent<PlayerHand>().DrawCard(this, true);
-                    //PlayerHand.instance.DrawCard(this, true);
                 }
             }
 
@@ -63,8 +62,6 @@ public class Card : MonoBehaviour
                 if (ParentCardSlot.name.IndexOf("PlayerCardSlot", System.StringComparison.CurrentCulture) != -1)
                 {
                     GameObject.Find("PlayerHand").GetComponent<PlayerHand>().DiscardCard(this, true, false);
-
-                    //PlayerHand.instance.DiscardCard(this, true, false);
                 }
             }
         }

@@ -6,8 +6,9 @@ using UnityEngine.SceneManagement;
 public class GameUI : MonoBehaviour 
 {
     public static GameUI instance;
-    public Text currentTurnText;
     private Text currentDeadwoodPointsText;
+    private Text PlayerUIScoreText;
+    private Text AIUIScoreText;
 
     //Round results panel
     private Text PlayerRoundDWPointsText;
@@ -33,14 +34,16 @@ public class GameUI : MonoBehaviour
     private void Awake()
 	{
         instance = this;
-        GameObject scoreGO = GameObject.Find("CurrentTurn");
-        GameObject deadpointsGO = GameObject.Find("CurrentPoints");
+        currentDeadwoodPointsText = GameObject.Find("CurrentPoints").GetComponent<Text>();
+        PlayerUIScoreText = GameObject.Find("PlayerScoreTextUI").GetComponent<Text>();
+        AIUIScoreText = GameObject.Find("AIScoreTextUI").GetComponent<Text>();
+        currentDeadwoodPointsText.text = "0";
+        PlayerUIScoreText.text = "0";
+        AIUIScoreText.text = "0";
+
         RoundResultPanelGO = GameObject.Find("RoundResultsPanel");
         RoundResultPanelGO.SetActive(false);
 
-        currentTurnText = scoreGO.GetComponent<Text>();
-        currentTurnText.text = "Current turn: PlayerDraw";
-        currentDeadwoodPointsText = deadpointsGO.GetComponent<Text>();
 
         ContinueButtonGO = RoundResultPanelGO.transform.Find("ContinueButton").gameObject;
         PlayerRoundDWPointsText = RoundResultPanelGO.transform.Find("PlayerDWPointsText").gameObject.GetComponent<Text>();
@@ -72,9 +75,9 @@ public class GameUI : MonoBehaviour
 
 
     //Called in Player.ScanHand() and Round.UpdateTurn()
-    public void UpdateScoreUI()
+    public void UpdateDWUI()
     {
-        currentDeadwoodPointsText.text = "Points: " + GameObject.Find("PlayerHand").GetComponent<PlayerHand>().DeadwoodPoints;
+        currentDeadwoodPointsText.text = ""+ GameObject.Find("PlayerHand").GetComponent<PlayerHand>().DeadwoodPoints;
     }
     public void GinUI()
     {
@@ -158,6 +161,8 @@ public class GameUI : MonoBehaviour
 
         PlayerMatchScoreText.text = "Player score: " + Match.instance.PlayerScore;
         AIMatchScoreText.text = "AI score: " + Match.instance.AIScore;
+        PlayerUIScoreText.text = "" + Match.instance.PlayerScore;
+        AIUIScoreText.text = "" + Match.instance.AIScore;
 
         if (endMatch)
         {
