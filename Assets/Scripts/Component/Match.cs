@@ -16,6 +16,8 @@ public class Match : MonoBehaviour
                                            //means player wins first round with 23 points
     public List<string> UpdateResult;
 
+    public List<string> ResultType;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -83,6 +85,23 @@ public class Match : MonoBehaviour
         else
         {
             GameUI.instance.DisplayRoundResult(winner, score, winType, false);
+        }
+
+        if (winType == -1)
+        {
+            ResultType.Add("UNDERCUT");
+        }
+        else if (winType == 0)
+        {
+            ResultType.Add("KNOCK");
+        }
+        else if (winType == 1)
+        {
+            ResultType.Add("GIN");
+        }
+        else if (winType == 2)
+        {
+            ResultType.Add("BIG GIN");
         }
 
     }
