@@ -136,6 +136,15 @@ public class CardSlot : MonoBehaviour
 		CardList.Remove(card);
 	}
 
+    public void RemoveAllCards()
+    {
+        while (TopCard() != null)
+        {
+            RemoveCard(TopCard());
+        }
+    }
+
+
     private void SmoothToTargetPositionRotation()
     {
         if (TargetTransform.position != transform.position || TargetTransform.eulerAngles != transform.eulerAngles)

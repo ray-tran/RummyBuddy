@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5645581082018914471
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5645581082018914470}
+  - component: {fileID: 5645581082018914465}
+  m_Layer: 0
+  m_Name: PlayerHand
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5645581082018914470
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5645581082018914471}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.748}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5645581082018914465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5645581082018914471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59e87a9d22c984bbe860cc82115df619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  silent: 1
+  MatrixValue: 0
+  Deadwoods: []
+  DeadwoodPoints: 0
+  SpadesList: []
+  ClubsList: []
+  DiamondsList: []
+  HeartsList: []
+  CardsInHand: []
+  CardSlot0: {fileID: 0}
+  CardSlot1: {fileID: 0}
+  CardSlot2: {fileID: 0}
+  CardSlot3: {fileID: 0}
+  CardSlot4: {fileID: 0}
+  CardSlot5: {fileID: 0}
+  CardSlot6: {fileID: 0}
+  CardSlot7: {fileID: 0}
+  CardSlot8: {fileID: 0}
+  CardSlot9: {fileID: 0}
+  CardSlot10: {fileID: 0}

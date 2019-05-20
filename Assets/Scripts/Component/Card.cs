@@ -4,11 +4,12 @@ using System.Collections;
 public class Card : MonoBehaviour
 {
     public CardSlot ParentCardSlot { get; set; }
+    public bool Silent { get; set; } = false;
     public enum Suit { Clubs, Diamonds, Hearts, Spades };
     public int FaceValue { get; set; } //Face cards:10; Ace:1
     public Suit CardSuit { get; set; } //Enum SUIT defined in above
     public int Rank { get; set; } //Ace:1; Jack:11; Queen:12; King:13
-
+    
     private float _positionDamp = .2f;
     private float _rotationDamp = .2f;
 
@@ -35,7 +36,9 @@ public class Card : MonoBehaviour
 
     private void Update()
     {
-        SmoothToTargetPositionRotation();
+        if (!Silent)
+            SmoothToTargetPositionRotation();
+
     }
 
     private void OnMouseOver()
@@ -49,7 +52,7 @@ public class Card : MonoBehaviour
                 if (ParentCardSlot.name.IndexOf("DrawStackSlot", System.StringComparison.CurrentCulture) != -1
                 || ParentCardSlot.name.IndexOf("DiscardStackSlot", System.StringComparison.CurrentCulture) != -1)
                 {
-                    PlayerHand.instance.DrawCard(this, true);
+                    GameObject.Find("PlayerHand").GetComponent<PlayerHand>().DrawCard(this, true);
                 }
             }
 
@@ -58,7 +61,7 @@ public class Card : MonoBehaviour
             {
                 if (ParentCardSlot.name.IndexOf("PlayerCardSlot", System.StringComparison.CurrentCulture) != -1)
                 {
-                    PlayerHand.instance.DiscardCard(this, true, false);
+                    GameObject.Find("PlayerHand").GetComponent<PlayerHand>().DiscardCard(this, true, false);
                 }
             }
         }

@@ -8,8 +8,8 @@ public class AIHand : PlayerHand
     private Dictionary<Card, CardSlot> KnownCards = new Dictionary<Card, CardSlot>();
     //private HashSet<Card> DesiredCards = new HashSet<Card>();
 
-    public int SimulationCount;
-    public float c;
+    public int SimulationCount = 1000;
+    public float c = Mathf.Sqrt(2);
 
     //Matrix represents cards and their locations
     //[4] : Suits. Suit { Clubs, Diamonds, Hearts, Spades };
@@ -21,9 +21,7 @@ public class AIHand : PlayerHand
 
     public new void Awake()
     {
-        SimulationCount = 1000;
         MatrixValue = 1;
-        c = Mathf.Sqrt(2);
         InstanceType = 1;
         instance = this;
         CardSlotList.Add(CardSlot0);
@@ -37,7 +35,8 @@ public class AIHand : PlayerHand
         CardSlotList.Add(CardSlot8);
         CardSlotList.Add(CardSlot9);
         CardSlotList.Add(CardSlot10);
-        InitializeCardSlots();
+        if (!silent)
+            InitializeCardSlots();
         //Debug.Log("Check y (AI):" + CardSlotList[4].TargetTransform.position.y);
 
     }
@@ -106,10 +105,12 @@ public class AIHand : PlayerHand
         // Each array tells if discarding this card will likely result in a win or not
         // Each array of number represents: wins (index 0) over sims (index 1)
         int[,] simsResult = new int[deadwoodsCount, 2];
-        FillMatrix(simsResult, 0);
+        FillMatrix(simsResult, 1);
 
          for (int totalSims = 1; totalSims <= SimulationCount; totalSims++)
          {
+            //Debug.Log("-----------");
+            //Debug.Log("Running sim " + totalSims);
 
              // UCT = Wins/Sims + c*sqrt(Log(total sims of all choices)/Sims))
              // exploitation component : Wins/Sims
@@ -118,31 +119,82 @@ public class AIHand : PlayerHand
              // CHOOSE ONE WITH LARGEST UCT
 
             double maxUCT = 0; int maxUCTIndex = 0;
-            for (int i = 0; i < deadwoodsCount; i++)
+            if (totalSims == SimulationCount)
             {
-                int wins = simsResult[i,0]; int sims = simsResult[i,1];
-                double UCT = (wins / sims) + (c * Mathf.Sqrt(Mathf.Log(totalSims) / sims));
-                if (UCT > maxUCT)
+                for (int i = 0; i < deadwoodsCount; i++)
                 {
-                    maxUCT = UCT;
-                    maxUCTIndex = i;
+                    int wins = simsResult[i, 0]; int sims = simsResult[i, 1];
+
+                    Debug.Log("-----Branch " + i + ": " + simsResult[i, 0] + "/" + simsResult[i, 1]);
+                    //double winOverSim = (double)wins / sims;
+
+                    //Debug.Log("wins / sims: " + winOverSim);
+                    //Debug.Log("Mathf.Log(totalSims): " + Mathf.Log(totalSims));
+                    //double logOVerSims = Mathf.Log(totalSims) / sims;
+                    //Debug.Log("Mathf.Log(totalSims)/sims: " + logOVerSims);
+                    //double exploitation = logOVerSims * c;
+                    //Debug.Log("c * Mathf.Sqrt(Mathf.Log(totalSims) / sims" + exploitation);
+                    //double full = winOverSim + exploitation;
+                    //Debug.Log("FULL: " + full);
+
+                    double UCT = ((double)wins / sims) + (c * Mathf.Sqrt(Mathf.Log(totalSims) / sims));
+                    Debug.Log("UCT " + UCT);
+
+                    if (UCT > maxUCT)
+                    {
+                        maxUCT = UCT;
+                        maxUCTIndex = i;
+                    }
+                    Debug.Log("Max UCT " + maxUCT);
                 }
+
             }
+            else
+            {
+                for (int i = 0; i < deadwoodsCount; i++)
+                {
+                    int wins = simsResult[i, 0]; int sims = simsResult[i, 1];
+                    double UCT = (wins / sims) + (c * Mathf.Sqrt(Mathf.Log(totalSims) / sims));
+                    if (UCT > maxUCT)
+                    {
+                        maxUCT = UCT;
+                        maxUCTIndex = i;
+                    }
+                }
+
+            }
+            //for (int i = 0; i < deadwoodsCount; i++)
+            //{               
+            //    int wins = simsResult[i,0]; int sims = simsResult[i,1];
+            //    double UCT = (wins / sims) + (c * Mathf.Sqrt(Mathf.Log(totalSims) / sims));
+            //    if (UCT > maxUCT)
+            //    {
+            //        maxUCT = UCT;
+            //        maxUCTIndex = i;
+            //    }
+            //}
+
+            Debug.Log("Branch taken: " + maxUCTIndex);
 
             int[,] simGameState = (int[,])KnownGameState.Clone(); //Create a deep copy of game state
-            PutCardInGameState(simGameState, Deadwoods[maxUCTIndex], 2); //Discard chosen card in the game state
-            AISimulationState sim = new AISimulationState(Deadwoods[maxUCTIndex], simGameState);
-            if (sim.GetSimulation())
+            //PutCardInGameState(simGameState, Deadwoods[maxUCTIndex], 2); //Discard chosen card in the game state
+            AISimulationState.instance.InitializeAISimState(Deadwoods[maxUCTIndex], simGameState);
+            //AISimulationState sim = new AISimulationState(Deadwoods[maxUCTIndex], simGameState);
+            if (AISimulationState.instance.GetSimulation())
             {
                 simsResult[maxUCTIndex, 0]++; //If sim returns a win, update win count for this card
+                //Debug.Log("This sim is a win!");
+
             }
             simsResult[maxUCTIndex, 1]++; //Update # of sims for this card
          }
 
+
          //Choose the card with most simulations
-        double maxSimCount = 0; int maxSimCountIndex = 0;
+        int maxSimCount = 0; int maxSimCountIndex = 0;
         for (int i = 0; i < deadwoodsCount; i++)
         {
+            Debug.Log("Branch " + i + ": " + simsResult[i, 0] + "/" + simsResult[i, 1]);
             if (simsResult[i,1] > maxSimCount)
             {
                 maxSimCount = simsResult[i, 1];
@@ -150,10 +202,24 @@ public class AIHand : PlayerHand
             }
         }
 
-        //TODO: uncomment following when AISimulationState is done
-       // return Deadwoods[maxSimCountIndex];
+        int maxWin = simsResult[maxSimCountIndex, 0];
+        int optimalIndex = maxSimCountIndex;
+        for (int i = 0; i < deadwoodsCount; i++)
+        {
+            if (simsResult[i,1] == maxSimCount && simsResult[i, 0] >= maxWin)
+            {
+                maxWin = simsResult[i, 0];
+                optimalIndex = i;
+            }
+        }
 
-*/
+
+
+        Debug.Log("Choosing branch: " + optimalIndex);
+        //TODO: uncomment following when AISimulationState is done
+        return Deadwoods[optimalIndex];
+
+    */
         //TEMPORARY STRATEGY//
         //The last card in Deadwoods the highest valued deadwood
         return Deadwoods[Deadwoods.Count-1];
@@ -178,13 +244,25 @@ public class AIHand : PlayerHand
     {
         //Debug.Log("Putting " + card.name + " in game state");
 
-        int row = (int)card.CardSuit;
-        int col = card.Rank - 1;
-        gameState[row, col] = val;
+        try
+        {
+            int row = (int)card.CardSuit;
+            int col = card.Rank - 1;
+            gameState[row, col] = val;
+        }
+        catch (System.Exception) 
+        { 
+            Debug.Log("PutCardInGameState error");
+            Debug.Log("row: " + (int)card.CardSuit);
+            Debug.Log("col: " + (card.Rank - 1));
+            Debug.Log("matrix size: " + gameState.GetLength(0) + " x " + gameState.GetLength(1));
+
+        }
+
     }
 
-    //Including the card we're testing on
-    public int GetColumnValCount(Card card, int val)
+        //Including the card we're testing on
+        public int GetColumnValCount(Card card, int val)
     {
         int col = card.Rank - 1;
         int count = 1;

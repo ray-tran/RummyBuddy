@@ -40,6 +40,8 @@ public class Match : MonoBehaviour
     {
         if (RoundCount != 0)
         {
+            GameObject.Find("PlayerHand").GetComponent<PlayerHand>().DeadwoodPoints = 0;
+            GameUI.instance.UpdateDWUI();
             StartCoroutine(Dealer.instance.ShuffleCoroutine());//Clean table, shuffle, deal
             //Dealer.instance.ShuffleCoroutine();
         }
@@ -86,24 +88,6 @@ public class Match : MonoBehaviour
         }
 
     }
-
-    //public void DisplayRoundResult(string winner, int score, int winType)
-    //{
-    //    GameObject roundResults;
-
-    //    Debug.Log("Round winner: " + winner);
-    //    Debug.Log("Winner round score: " + score);
-    //    Debug.Log("Win type round score: " + winType);
-
-    //    Debug.Log("Player match score: " + PlayerScore);
-    //    Debug.Log("AI match score: " + AIScore);
-
-
-    //    //Flip cards around, requires new layout of card slots. Maybe done later as it's not super important now
-    //    //Display round score
-    //    //Display updated match score
-    //    //Display continue button. If continue button is clicked then call StartRound()
-    //}
 
 
     public void EndMatch(string winner, int score, int winType)
