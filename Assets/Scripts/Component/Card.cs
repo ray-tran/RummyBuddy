@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEditor;
+using System.IO;
 
 public class Card : MonoBehaviour
 {
@@ -9,7 +11,7 @@ public class Card : MonoBehaviour
     public int FaceValue { get; set; } //Face cards:10; Ace:1
     public Suit CardSuit { get; set; } //Enum SUIT defined in above
     public int Rank { get; set; } //Ace:1; Jack:11; Queen:12; King:13
-    
+
     private float _positionDamp = .2f;
     private float _rotationDamp = .2f;
 
@@ -119,5 +121,28 @@ public class Card : MonoBehaviour
     {
         Resources.UnloadAsset(GetComponent<Renderer>().material.mainTexture);
         GetComponent<Renderer>().material.mainTexture = null;
+    }
+    public void TurnDark()
+    {
+        string filePath = Application.persistentDataPath + "/Textures/" + gameObject.name.Substring(0, gameObject.name.Length-1) + "_dark.png";
+        //AssetBundle cardBundle = BundleSingleton.Instance.LoadBundle(SourceAssetBundlePath);
+        //Texture2D inputTexture = AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D));
+        //Texture2D inputTexture = Resources.Load(path) as Texture2D;
+        Texture2D inputTexture = null;
+
+        byte[] fileData;
+        if (File.Exists(filePath))
+        {
+            fileData = File.ReadAllBytes(filePath);
+            inputTexture = new Texture2D(2, 2);
+            inputTexture.LoadImage(fileData); //..this will auto-resize the texture dimensions.
+        }
+
+        GetComponent<Renderer>().material.mainTexture = inputTexture;
+    }
+
+    public void TurnLight()
+    {
+        FrontBecameVisible();
     }
 }

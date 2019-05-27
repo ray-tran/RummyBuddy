@@ -216,23 +216,4 @@ QualitySettings:
     asyncUploadPersistentBuffer: 1
     resolutionScalingFixedDPIFactor: 1
     excludedTargetPlatforms: []
-  m_PerPlatformDefaultQuality:
-    Android: 5
-    BlackBerry: 5
-    FlashPlayer: 3
-    GLES Emulation: 3
-    PS3: 3
-    PS4: 3
-    PSM: 3
-    PSP2: 3
-    Samsung TV: 5
-    Standalone: 5
-    Tizen: 5
-    WP8: 3
-    Web: 5
-    WebGL: 5
-    Windows Store Apps: 3
-    XBOX360: 3
-    XboxOne: 3
-    iPhone: 5
-    tvOS: 0
+  m_PerPlatformDefaultQuality: {}

@@ -466,7 +466,10 @@ public class PlayerHand : MonoBehaviour
             foreach(Card c in meld)
             {
                 if (InstanceType == 0)
+                {
                     c.gameObject.transform.Find("Glow").gameObject.SetActive(true);
+                    c.gameObject.GetComponent<Card>().TurnDark();
+                }
                 CardSlotList[index].AddCard(c);
                 index++;
             }

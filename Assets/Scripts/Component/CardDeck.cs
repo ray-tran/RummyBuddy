@@ -31,7 +31,7 @@ public class CardDeck : MonoBehaviour
         //nameArray[8] = "9_of_hearts";
         //nameArray[9] = "9_of_spades";
 
-        shuffleArray(nameArray);
+        //shuffleArray(nameArray);
 
         //go thru the Cards folder, initialize each as a Card instance
         //then add to CardList	
