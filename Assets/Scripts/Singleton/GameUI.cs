@@ -6,8 +6,9 @@ using UnityEngine.SceneManagement;
 public class GameUI : MonoBehaviour 
 {
     public static GameUI instance;
+    public bool endMatch = false;
+    public Text currentDeadwoodPointsText;
     public Text currentTurnText;
-    private Text currentDeadwoodPointsText;
 
     //Round results panel
     private Text PlayerRoundDWPointsText;
@@ -134,6 +135,7 @@ public class GameUI : MonoBehaviour
 
     public void DisplayRoundResult(string winner, int score, int winType, bool endMatch)
     {
+        endMatch = true;
         PlayerRoundDWPointsText.text = PlayerHand.instance.DeadwoodPoints.ToString();
         AIRoundDWPointsText.text = AIHand.instance.DeadwoodPoints.ToString();
         string winTypeText = "";
