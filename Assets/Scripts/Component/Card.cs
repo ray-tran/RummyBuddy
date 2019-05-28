@@ -60,7 +60,7 @@ public class Card : MonoBehaviour
             {
                 if (ParentCardSlot.name.IndexOf("PlayerCardSlot", System.StringComparison.CurrentCulture) != -1)
                 {
-                    PlayerHand.instance.DiscardCard(this);
+                    PlayerHand.instance.DiscardCard(this, false);
                 }
             }
         }

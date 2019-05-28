@@ -75,7 +75,7 @@ public class AIHand : PlayerHand
 
     private void AIDiscard()
     {
-        DiscardCard(DecideCardToDiscard());
+        DiscardCard(DecideCardToDiscard(), false);
     }
 
 }

@@ -7,22 +7,28 @@ public class GameUI : MonoBehaviour
 {
     public static GameUI instance;
     public Text currentTurnText;
-    public Text currentDeadwoodPointsText;
+    private Text currentDeadwoodPointsText;
 
     //Round results panel
-    public Text PlayerRoundDWPointsText;
-    public Text AIRoundDWPointsText;
-    public Text WinScoreText;
-    public Text WinTypeText;
-    public Text PlayerMatchScoreText;
-    public Text AIMatchScoreText;
-    public Text MatchWinText;
+    private Text PlayerRoundDWPointsText;
+    private Text AIRoundDWPointsText;
+    private Text WinScoreText;
+    private Text WinTypeText;
+    private Text PlayerMatchScoreText;
+    private Text AIMatchScoreText;
+    private Text MatchWinText;
 
-    public GameObject RoundResultPanelGO;
+    private GameObject RoundResultPanelGO;
     private GameObject ContinueButtonGO;
 
     private GameObject MatchWinTextGO;
     private GameObject MainMenuButtonGO;
+
+
+    private GameObject EndRoundMoveButtonsPanelGO;
+    private GameObject BigGinButtonGO;
+    private GameObject GinButtonGO;
+    private GameObject KnockButtonGO;
 
     private void Awake()
 	{
@@ -50,7 +56,20 @@ public class GameUI : MonoBehaviour
 
         MainMenuButtonGO = RoundResultPanelGO.transform.Find("MainMenuButton").gameObject;
         MainMenuButtonGO.SetActive(false);
+
+
+        //End round move buttons
+        EndRoundMoveButtonsPanelGO = GameObject.Find("EndRoundMoveButtonsPanel");
+        EndRoundMoveButtonsPanelGO.SetActive(false);
+
+        BigGinButtonGO = EndRoundMoveButtonsPanelGO.transform.Find("BigGinButton").gameObject;
+        GinButtonGO = EndRoundMoveButtonsPanelGO.transform.Find("GinButton").gameObject;
+        KnockButtonGO = EndRoundMoveButtonsPanelGO.transform.Find("KnockButton").gameObject;
+        BigGinButtonGO.SetActive(false);
+        GinButtonGO.SetActive(false);
+        KnockButtonGO.SetActive(false);
     }
+
 
     //Called in Player.ScanHand() and Round.UpdateTurn()
     public void UpdateScoreUI()
@@ -72,12 +91,46 @@ public class GameUI : MonoBehaviour
 	public void ContinueUI()
     {
         RoundResultPanelGO.SetActive(false);
+        DisableEndRoundMoveButton();
         Match.instance.StartRound();
     }
     public void GoToMainMenuUI()
     {
         SceneManager.LoadScene("MainMenu");
     }
+
+    //End round call type:
+    //0: knock
+    //1: gin
+    //2: big gin
+    public void DisplayEndRoundMoveButton(int legalType)
+    {
+        switch(legalType)
+        {
+            case 0:
+                KnockButtonGO.SetActive(true);
+                GinButtonGO.SetActive(false);
+                BigGinButtonGO.SetActive(false);
+                break;
+            case 1:
+                GinButtonGO.SetActive(true);
+                KnockButtonGO.SetActive(false);
+                BigGinButtonGO.SetActive(false);
+                break;
+            case 2:
+                BigGinButtonGO.SetActive(true);
+                GinButtonGO.SetActive(false);
+                KnockButtonGO.SetActive(false);
+                break;
+        }
+        EndRoundMoveButtonsPanelGO.SetActive(true);
+    }
+
+    public void DisableEndRoundMoveButton()
+    {
+        EndRoundMoveButtonsPanelGO.SetActive(false);
+    }
+
 
     public void DisplayRoundResult(string winner, int score, int winType, bool endMatch)
     {
@@ -105,13 +158,6 @@ public class GameUI : MonoBehaviour
 
         PlayerMatchScoreText.text = "Player score: " + Match.instance.PlayerScore;
         AIMatchScoreText.text = "AI score: " + Match.instance.AIScore;
-
-        //Debug.Log("Round winner: " + winner);
-        //Debug.Log("Winner round score: " + score);
-        //Debug.Log("Win type round score: " + winType);
-
-        //Debug.Log("Player match score: " + Match.instance.PlayerScore);
-        //Debug.Log("AI match score: " + Match.instance.AIScore);
 
         if (endMatch)
         {
