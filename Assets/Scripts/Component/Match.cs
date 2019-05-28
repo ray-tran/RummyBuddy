@@ -17,6 +17,7 @@ public class Match : MonoBehaviour
     public List<string> UpdateResult;
 
     public List<string> ResultType;
+    public List<string> CurrentTrend;
 
     // Start is called before the first frame update
     void Awake()
