@@ -3907,8 +3907,8 @@ MonoBehaviour:
   CardSlot8: {fileID: 905695466}
   CardSlot9: {fileID: 658757946}
   CardSlot10: {fileID: 748845450}
-  SimulationCount: 50
-  c: 0
+  SimulationCount: 2000
+  c: 1
 --- !u!4 &1371859735
 Transform:
   m_ObjectHideFlags: 0
@@ -4046,16 +4046,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8568b398a85d40a2959c7f8c8ab808c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentTurn: 0
-  DiscardPile: {fileID: 1228736486}
-  DrawPile: {fileID: 1696342048}
-  winner: 
-  winScore: 0
-  _playerHandPrefab: {fileID: 5645581082018914471, guid: 76e17cb32a75345019fbca169baf0e1c,
-    type: 3}
-  _aiHandPrefab: {fileID: 8430097446540304295, guid: 6788c4b9eeff14308883eea466eaa579,
-    type: 3}
-  _cardPrefab: {fileID: 169040, guid: 7ee95d52f0ef749469ed5e50087c9d50, type: 3}
 --- !u!1 &1411039491
 GameObject:
   m_ObjectHideFlags: 0

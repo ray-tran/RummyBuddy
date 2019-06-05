@@ -52,7 +52,7 @@ public class AISimulationState : MonoBehaviour
         CurrentTurn = Round.instance.CurrentTurn; //since this inherits from Round I think it already has this
         FillCards();
         SimulationTurn = 1;
-        Debug.Log("Sim Started");
+        //Debug.Log("Sim Started");
     }
 
 
@@ -227,7 +227,7 @@ public class AISimulationState : MonoBehaviour
             }
         }
 
-        Debug.Log("Spots"+Spots.Count);
+        //Debug.Log("Spots"+Spots.Count);
         int RandomSpot = rand.Next(0, Spots.Count - 1);
 
         (int,int) GameStateCard = (Spots[RandomSpot].Item1, Spots[RandomSpot].Item2);
@@ -417,7 +417,7 @@ public class AISimulationState : MonoBehaviour
             PlayerDeadwoodPoints -= PlayerMelds[currentMeld].Points;
         }
 
-        Debug.Log("AI: " + AIDeadwoodPoints+" Player: "+ PlayerDeadwoodPoints);
+        //Debug.Log("AI: " + AIDeadwoodPoints+" Player: "+ PlayerDeadwoodPoints);
 
     }
 
@@ -435,7 +435,7 @@ public class AISimulationState : MonoBehaviour
         int currentCardFace = face;
         if (GameState[suit,currentCardFace] == (int) hand && currentCardFace >= 0)
         {
-            Debug.Log("Run");
+            //Debug.Log("Run");
             newRun.Cards.Add((currentCardFace, face));
             newRun.Points += CardFaceToPoints(currentCardFace);
             count++;
@@ -458,7 +458,7 @@ public class AISimulationState : MonoBehaviour
         int currentCardSuit = suit;
         if (GameState[currentCardSuit, face] == (int) hand && currentCardSuit <= 3)
         {
-            Debug.Log("Set");
+            //Debug.Log("Set");
             newSet.Cards.Add((currentCardSuit, face));
             newSet.Points += CardFaceToPoints(face);
             count++;
@@ -561,7 +561,7 @@ public class AISimulationState : MonoBehaviour
 
         SimulateTurnMove();
 
-        Debug.Log("Sim Ended");
+        //Debug.Log("Sim Ended");
         return AIWin;
     }
 

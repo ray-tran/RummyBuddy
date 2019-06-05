@@ -125,7 +125,7 @@ public class AIHand : PlayerHand
                 {
                     int wins = simsResult[i, 0]; int sims = simsResult[i, 1];
 
-                    Debug.Log("-----Branch " + i + ": " + simsResult[i, 0] + "/" + simsResult[i, 1]);
+                    //Debug.Log("-----Branch " + i + ": " + simsResult[i, 0] + "/" + simsResult[i, 1]);
                     //double winOverSim = (double)wins / sims;
 
                     //Debug.Log("wins / sims: " + winOverSim);
@@ -138,14 +138,14 @@ public class AIHand : PlayerHand
                     //Debug.Log("FULL: " + full);
 
                     double UCT = ((double)wins / sims) + (c * Mathf.Sqrt(Mathf.Log(totalSims) / sims));
-                    Debug.Log("UCT " + UCT);
+                    //Debug.Log("UCT " + UCT);
 
                     if (UCT > maxUCT)
                     {
                         maxUCT = UCT;
                         maxUCTIndex = i;
                     }
-                    Debug.Log("Max UCT " + maxUCT);
+                    //Debug.Log("Max UCT " + maxUCT);
                 }
 
             }
@@ -174,7 +174,7 @@ public class AIHand : PlayerHand
             //    }
             //}
 
-            Debug.Log("Branch taken: " + maxUCTIndex);
+            //Debug.Log("Branch taken: " + maxUCTIndex);
 
             int[,] simGameState = (int[,])KnownGameState.Clone(); //Create a deep copy of game state
             //PutCardInGameState(simGameState, Deadwoods[maxUCTIndex], 2); //Discard chosen card in the game state
@@ -194,7 +194,7 @@ public class AIHand : PlayerHand
         int maxSimCount = 0; int maxSimCountIndex = 0;
         for (int i = 0; i < deadwoodsCount; i++)
         {
-            Debug.Log("Branch " + i + ": " + simsResult[i, 0] + "/" + simsResult[i, 1]);
+            //Debug.Log("Branch " + i + ": " + simsResult[i, 0] + "/" + simsResult[i, 1]);
             if (simsResult[i,1] > maxSimCount)
             {
                 maxSimCount = simsResult[i, 1];
@@ -215,7 +215,7 @@ public class AIHand : PlayerHand
 
 
 
-        Debug.Log("Choosing branch: " + optimalIndex);
+        //Debug.Log("Choosing branch: " + optimalIndex);
         //TODO: uncomment following when AISimulationState is done
         return Deadwoods[optimalIndex];
 
