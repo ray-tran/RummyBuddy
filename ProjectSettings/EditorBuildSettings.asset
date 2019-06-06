@@ -11,16 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Game.unity
     guid: 52e9814997f4f4a4c80172145ca1dc46
-  - enabled: 0
-    path: Assets/Scenes/matchEndScene.unity
-    guid: f63404a00fc7a23488078d632fe99ec7
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/Tutorial.unity
+    guid: e7c9263bc3232433e9c5ffe714d2393d
   m_configObjects: {}
